@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -75,6 +77,10 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves = null;
+        switch(pieceType) {
+            case KING -> {validMoves = new KingMovesGenerator(board,myPosition).getValidMoves();}
+        }
+        return validMoves;
     }
 }
