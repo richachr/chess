@@ -31,6 +31,13 @@ public class ChessMove {
     }
 
     @Override
+    public String toString() {
+        return "ChessMove{" +
+                "end=" + end +
+                '}';
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(start, end, promotion);
     }
