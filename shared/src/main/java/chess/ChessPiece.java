@@ -78,6 +78,7 @@ public class ChessPiece {
         Collection<ChessMove> validMoves = null;
         switch(pieceType) {
             case KING -> {validMoves = new KingMovesGenerator(board,myPosition).getValidMoves();}
+            case ROOK -> {validMoves = new RookMovesGenerator(board,myPosition).getValidMoves();}
         }
         return validMoves;
     }
