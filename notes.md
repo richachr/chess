@@ -3,7 +3,7 @@
 - Use git mv instead of mv to rename/move files, use git rm to remove files. git rm --cached removes a file from
   repository only.
 - Math methods allow for safer calculations, bigger numbers.
-- final keyword declares a constant variable.
+- final keyword declares a constant variable. It must be declared by the end of the constructor.
 - Variables must be initialized before use.
 - A package is a set of related classes.
 - Static methods are not attached to any object.
@@ -68,7 +68,23 @@
 - Working directory can be fetched using System.getProperty("user.dir").
 - To create a new directory, use Files.createDirectory(path). For multiple, use Files.createDirectories(path). To create a file. use Files.createFile(path). Files.exists checks if it exists. Temp files/directories can be created using createTempFile(path, prefix, suffix), etc.
 - To copy, use Files.copy(from, to). To move, use Files.move(from, to). Replace existing and copy attributes can be included as params with StandardCopyOption.REPLACE_EXISTING, etc.
-- FIles.delete(path) deletes a file.
-- FIles.list(path) lists all files as a Stream of paths, should be opened as try-with-resources. Depth-first.
+- Files.delete(path) deletes a file.
+- Files.list(path) lists all files as a Stream of paths, should be opened as try-with-resources. Depth-first.
 - Imports don't increase size of compiled files. They appear after package but before class declarations. * imports all packages, but not subpackages. No import is needed for classes in java.lang or in the same package.
 - Classpath manages directories for packages
+- Variables can only store objects by reference. Mutators modify the original object, while accessors return new ones.
+- Parameters are always passed by value.
+- Overloaded methods are multiple methods with the same name but different parameters.
+- Instance variables are automatically set to 0/false/null.
+- Default values are specified when a variable is initialized.
+- Records are immutable public classes for simple implementations
+- Static initialization blocks can initialize a static variable upon creation of the class. Static variables are class variables, the same between instances.
+- Not specifying public or private gives an item package access - everything in the package can use it.
+- Import static allows you to import static methods and variables.
+- Inner classes have access to all outer methods and variables.
+- Constructors invoke each other with this() and the parent's constructor with super(); Constructors have no return type and the name matches the class.
+- Inheritance: is-a, use the keyword "extends". All instance variables are inherited, even private ones. All non-private, non-static methods are inherited.
+- To override a method, you must have the same arguments, return type, same or looser access modifier, and same or more specific exceptions. Overridden methods can be called using super, and @Override is used as a sanity check. Children must be substitutable for parents.
+- Final methods can't be overridden.
+- If methods are declared in an enum, a semicolon must follow the values that precede the method.
+- Classes: Keep data private, one responsibility per class, classes have noun names while methods have verb names, static methods should be used sparingly.
