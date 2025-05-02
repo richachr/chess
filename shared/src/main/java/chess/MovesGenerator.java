@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class MovesGenerator {
-    ArrayList<ChessMove> validMoves = new ArrayList<ChessMove>();
-    ArrayList<ChessPosition> possibleMoves = new ArrayList<ChessPosition>();
+    ArrayList<ChessMove> validMoves = new ArrayList<>();
+    ArrayList<ChessPosition> possibleMoves = new ArrayList<>();
     ChessBoard board;
     ChessPosition position;
 

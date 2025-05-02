@@ -39,8 +39,7 @@ public class ChessPosition {
     }
 
     public boolean isInBounds() {
-        if(row >= 1 && row <= 8 && col >= 1 && col <= 8) {return true;}
-        else {return false;}
+        return (row >= 1 && row <= 8 && col >= 1 && col <= 8);
     }
 
     /**
