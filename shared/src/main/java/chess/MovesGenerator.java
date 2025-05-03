@@ -8,10 +8,12 @@ public class MovesGenerator {
     ArrayList<ChessPosition> possibleMoves = new ArrayList<>();
     ChessBoard board;
     ChessPosition position;
+    ChessGame.TeamColor ownColor;
 
     public MovesGenerator(ChessBoard board, ChessPosition position) {
         this.board = board;
         this.position = position;
+        ownColor = board.getPiece(position).getTeamColor();
     }
 
     Collection<ChessMove> getValidMoves() {
