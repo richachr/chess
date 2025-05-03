@@ -78,7 +78,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         switch(pieceType) {
             case KING -> {return new KingMovesGenerator(board,myPosition).getValidMoves();}
-            case KNIGHT -> {}
+            case KNIGHT -> {return new KnightMovesGenerator(board,myPosition).getValidMoves();}
             case ROOK -> {return new RookMovesGenerator(board,myPosition).getValidMoves();}
             case BISHOP -> {return new BishopMovesGenerator(board,myPosition).getValidMoves();}
             case QUEEN -> {return new QueenMovesGenerator(board,myPosition).getValidMoves();}
