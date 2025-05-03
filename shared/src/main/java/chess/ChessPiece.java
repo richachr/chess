@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -11,8 +12,8 @@ import java.util.Objects;
  */
 public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
-    private final ChessPiece.PieceType pieceType;
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    private final PieceType pieceType;
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.pieceColor = pieceColor;
         this.pieceType = type;
     }
@@ -75,13 +76,15 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> validMoves = null;
         switch(pieceType) {
-            case KING -> {validMoves = new KingMovesGenerator(board,myPosition).getValidMoves();}
-            case ROOK -> {validMoves = new RookMovesGenerator(board,myPosition).getValidMoves();}
-            case BISHOP -> {validMoves = new BishopMovesGenerator(board,myPosition).getValidMoves();}
-            case QUEEN -> {validMoves = new QueenMovesGenerator(board,myPosition).getValidMoves();}
+            case KING -> {return new KingMovesGenerator(board,myPosition).getValidMoves();}
+            case KNIGHT -> {}
+            case ROOK -> {return new RookMovesGenerator(board,myPosition).getValidMoves();}
+            case BISHOP -> {return new BishopMovesGenerator(board,myPosition).getValidMoves();}
+            case QUEEN -> {return new QueenMovesGenerator(board,myPosition).getValidMoves();}
+            case PAWN -> {}
+            default -> throw new IllegalStateException("Unexpected value: " + pieceType);
         }
-        return validMoves;
+        return new ArrayList<>();
     }
 }
