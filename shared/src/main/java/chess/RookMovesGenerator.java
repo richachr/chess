@@ -5,7 +5,6 @@ public class RookMovesGenerator extends MovesGenerator {
         super(board, position);
         int row = position.getRow();
         int col = position.getColumn();
-        var ownColor = board.getPiece(position).getTeamColor();
         ChessPosition testPosition = new ChessPosition(position.getRow(), position.getColumn());
         // Check above
         row++;
