@@ -82,9 +82,8 @@ public class ChessPiece {
             case ROOK -> {return new RookMovesGenerator(board,myPosition).getValidMoves();}
             case BISHOP -> {return new BishopMovesGenerator(board,myPosition).getValidMoves();}
             case QUEEN -> {return new QueenMovesGenerator(board,myPosition).getValidMoves();}
-            case PAWN -> {}
+            case PAWN -> {return new PawnMovesGenerator(board,myPosition).getValidMoves();}
             default -> throw new IllegalStateException("Unexpected value: " + pieceType);
         }
-        return new ArrayList<>();
     }
 }
