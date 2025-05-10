@@ -88,3 +88,107 @@
 - Final methods can't be overridden.
 - If methods are declared in an enum, a semicolon must follow the values that precede the method.
 - Classes: Keep data private, one responsibility per class, classes have noun names while methods have verb names, static methods should be used sparingly.
+- Records need all parameters, have only one constructor, have automatic getters, equals, hashCode, and toString methods.
+- Getters in records are just the field names e.g. p.name().
+- To change records, add a method inside the braces that returns a new record with updated data.
+- Exceptions are constructed with `new` and the parameter being an error message. `throw` throws an exception.
+- Errors are from the language, exceptions are from the programmer.
+- Unchecked exceptions are subclasses of RuntimeException, and all other exceptions are checked.
+- Unchecked exceptions are not checked during compilation. Checked exceptions are used when failure is anticipated. Unchecked exceptions are the programmer's fault.
+- You can make your own exception classes by extending Exception, RuntimeException, etc.
+- Possible exceptions must be declared for a method in the header using `throws` followed by the exception classes.
+- Overwritten methods cannot throw more kinds of exceptions than their parent.
+- Catch exceptions using a try-catch statement, with one or multiple handlers. Catch clauses are matched top to bottom, so the most specific exception should come first.
+- Try-with-resources ensures open hooks are closed in case of exceptions. Resources must include the AutoCloseable interface. Multiple resources can be separated with semicolons, and they will be closed in reverse order.
+- Suppressed exceptions are exceptions caused by another exception or handling of it. You can use methods to find suppressed exceptions and causes of rethrown exceptions.
+- `finally` clauses are run after try-catch statements finish. It is only for closing resources, not changing the control flow by returning or breaking or throwing exceptions.
+- Use the Thread class's method to set a default uncaught exception handler.
+- Crashing is never acceptable!
+- Exceptions have a printStackTrace() method that is useful.
+- Interfaces define methods that subclasses must implement. They're a set of methods that a class promises to implement. All methods are public. Default implementations in the interface are optional, and methods must be prefaced with the `default` tag in the declaration.
+- Unimplemented methods in an interface are called abstract.
+- Interface declaration: public interface Name {}. public class ClassName implements Name {}
+- Interfaces can be used in place of specific classes for variable types, as long as the class of the object referenced by the variable implements it. All objects, however, must be instances of classes.
+- Casting is done by doing `(type) varName`, which can be done to access new methods from the subtype that are not in the supertype.
+- `instanceof` is an operator checking if an object is a certain type, and it is null-safe. `varName instanceof typeName` returns a boolean.
+- Checking the instance type and then casting can be done with `varName instanceof typeName var2Name` where var2Name is a new variable that can be used immediately.
+- Interfaces can extend each other. Classes can implement multiple interfaces.
+- Interface variables are automatically public, static, and final.
+- To specify which superclass you are using a method from, use SuperClassName,super,method() syntax.
+- Private interface methods are possible, but cannot be defaults, so they're only helper methods.
+- A generic type is done in angle brackets in declarations and used throughout the class, like `public interface Collections<T>`
+- The .compare() method safely compares numbers with regards to overflow, infinite values, and NaN.
+- Objects can access private features of any instance of their class.
+- Subclasses cannot access private features of superclasses.
+- Overriden methods must have the same parameters as the default method. This can be checked using @Override tag.
+- Dynamic method lookup means subclass instances assigned to superclass variables will still use the overridden methods of the subclass. Arrays function much the same way, but problems can be caused if superclass types are added to subclass arrays.
+- Anonymous subclasses are made with braces after the object `new` statement, usually with modified methods or fields.
+- Tagging a class definition with `abstract` means there is a method that subclasses must implement themselves. Objects cannot be created with an abstract class, but variables can have an abstract type.
+- `protected` keyword grants package level access and access to subclasses from other packages.
+- Sealed classes allow us to permit only certain subclasses or, by default, subclasses in the same file.
+- `toString()` converts an object to string representation, to print arrays use `Arrays.deepToString()`
+- `Objects.equals()` tests null safe equality.
+- Interfaces cannot win over default toString, equals, and hashCode methods.
+- The clone method should only be overridden to make deep copies.
+- For enums, `valueOf()` is opposite to `toString()`
+- `values()` returns an array containing all values of an enum.
+- You can add override methods to each value of an enum, but the methods must be declared in the parent and overridden.
+- You can use statics in an enum, but they must be declared after everything else in a static initializer.
+- Two interfaces for data structures: Collection for collections, and Map for maps.
+- Collections have a type parameter, and methods such as add, addAll, remove, removeAll, removeIf, retainAll, clear, size, isEmpty, contains, containsAll, iterator, fill, swap, shuffle, and toArray.
+- SequencedCollections additionally have get, add, and remove for the first and last elements, as well as a reversed method to reverse the order.
+- Lists have get, set, and remove methods, indexOf, lastIndexOf, replaceAll, sort, of (gives an unmodifiable list containing parameters provided), or subList.
+- Arrays that allow fast random access implement the RandomAccess tagging interface.
+- A deque is a double ended queue.
+- Iterators have the hasNext, next, and remove methods. 
+- ListIterators are used with LinkedLists
+- Iterators on mutated sets may throw exceptions.
+- For maps, use `put(key,value)` to insert a value. `get` gets a value from a key, `getOrDefault` is null-safe. `merge(key, valueToMerge, function)` merges values for things like counters. `computeIfAbsent` allows operations if a value has not yet been added. `forEach` allows you to iterate, and `keySet() values() entrySet()` ive you sets for their respective items. 
+- Entries in sets generated by methods of the Map class are passed by reference and will mutate the original map. This can be changed by calling `copyOf()` on the entry.
+- LinkedHashMaps retain order.
+- Properties collections are used for configs. System.getProperties has lots of useful data.
+- BitSet stores a sequence of bits efficiently, but it is not a collection.
+- Enums have their own sets and maps.
+- Deques are queues with efficient access to both ends.
+- Use ArrayDeques for stacks.
+- PriorityQueues are a provided class in Java.
+- WeakHashMaps allow better garbage collection for references that have been removed everywhere else.
+- Lists and sets can have sublists and subsets.
+- Collections class has unmodifiable versions of data structures
+- The concurrent package is better for concurrency than synchronized views.
+- checkedLists allow for errors to be thrown for incorrect objects on insertion instead of retrieval.
+- When placing objects in collections, equals() and hashCode() must be overwritten.
+- Collections can only store objects, so wrappers are needed for primitives.
+- HashSets are faster, TreeSets are less memory.
+- Equals and hashCode methods need to be in sync, with the same fields and methodology.
+- Sortable classes must implement Comparable, which has compareTo. 
+- In compareTo, if two objects are equal, it returns zero. If the object being compared is less, it returns -1. If the object being compared is greater, it returns 1.
+- Don't modify an object in a collection in a way that would change its position in the collection. Take it out, modify it, and put it back in.
+- Immutable objects don't need to be copied, they can be passed by reference.
+- One way to copy an object is to make a copy constructor that takes an object as a parameter and makes a new object that is exactly the same.
+- To override `clone()`, a class must implement Cloneable and should probably catch CloneNotSupportedException.
+- RuntimeExceptions are for bugs.
+- To create a deep copy, make a shallow copy and then clone each mutable member field manually, setting the new object's field equal to the clone.
+- When making clones, they must be cast into the correct type, because clone() returns an Object by default.
+- Local classes are classes defined inside methods. Local classes are not declared as public or private. Local classes can access the variables of the enclosing scope.
+- Define an anonymous class using `new [Interface]() {methods}`. Anonymous classes are only necessary when defining 2+ methods since you can't use a lambda.
+- Static classes cannot access any instance variables, including of the outer class.
+- Declare things as close as possible to where we use them.
+- Variables used in local classes can't be changed after the instance of the class is created, because of garbage collection protection and copying.
+- We want to create systems that work, are structured for ease of understanding/maintenance, and can hold up under change.
+- Software design is a cycle of planning, implementing, and testing. You can;t cut out any step.
+- Abstraction combats complexity. Some classes model real world concepts, some don't.
+- Make the public-facing code as simple as possible. They shouldn't need to know what's inside.
+- Store and do only what you need.
+- Names should convey function and purpose.
+- Class and variable names should be nouns, method names should be verbs.
+- Each class and method should have one well-defined responsibility. All features should be related to that.
+- Break a program into smaller problems, solve each, and them combine them to solve bigger problems.
+- System -> Subsystem -> Package -> Class -> Method
+- Choose good data structures and algorithms.
+- Classes should know as little about each other as possible - low coupling. This reduces ripple changes.
+- Everything should be private unless there's a good reason to make it public.
+- Protected: Variable/method is only visible within the inheritance tree.
+- Don't give away your implementations in names (security reasons).
+- Separate an interface and its implementation. Program to interfaces instead of concrete classes.
+- Don't repeat yourself.
