@@ -18,6 +18,8 @@ public class ChessGame {
         board = new ChessBoard();
         board.resetBoard();
         turnColor = TeamColor.WHITE;
+        TeamColor.WHITE.setKingPosition(new ChessPosition(1,5));
+        TeamColor.BLACK.setKingPosition(new ChessPosition(8,5));
     }
 
     @Override
@@ -54,8 +56,26 @@ public class ChessGame {
      * Enum identifying the 2 possible teams in a chess game
      */
     public enum TeamColor {
-        WHITE,
-        BLACK
+        WHITE, BLACK;
+        private TeamColor opponent;
+        private ChessPosition kingPosition;
+
+        static {
+            WHITE.opponent = BLACK;
+            BLACK.opponent = WHITE;
+        }
+
+        public TeamColor getOpponent() {
+            return opponent;
+        }
+
+        public ChessPosition getKingPosition() {
+            return kingPosition;
+        }
+
+        public void setKingPosition(ChessPosition kingPosition) {
+            this.kingPosition = kingPosition;
+        }
     }
 
     /**
@@ -67,6 +87,26 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         throw new RuntimeException("Not implemented");
+    }
+
+    private Collection<ChessPosition> teamValidMovePositions(TeamColor color) {
+        ChessPosition testPosition = new ChessPosition(1,1);
+        ChessPiece testPiece;
+        ArrayList<ChessPosition> opposingTeamMoves = new ArrayList<>();
+        for(int row = 1; row <= 8; row++) {
+            for(int col = 1; col <= 8; col++) {
+                testPosition.setRow(row);
+                testPosition.setCol(col);
+                testPiece = board.getPiece(testPosition);
+                if(testPiece != null && testPiece.getTeamColor() != color) {
+                    var validMoves = validMoves(testPosition);
+                    for(ChessMove move : validMoves) {
+                        opposingTeamMoves.add(move.getEndPosition());
+                    }
+                }
+            }
+        }
+        return opposingTeamMoves;
     }
 
     /**
@@ -86,28 +126,8 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition testPosition = new ChessPosition(1,1);
-        ChessPiece testPiece;
-        ChessPosition kingPosition = new ChessPosition(-1,-1);
-        ArrayList<ChessPosition> opposingTeamMoves = new ArrayList<>();
-        for(int row = 1; row <= 8; row++) {
-            for(int col = 1; col <= 8; col++) {
-                testPosition.setRow(row);
-                testPosition.setCol(col);
-                testPiece = board.getPiece(testPosition);
-                if(testPiece != null) {
-                    if(testPiece.getTeamColor() != teamColor) {
-                        var validMoves = validMoves(testPosition);
-                        for(ChessMove move : validMoves) {
-                            opposingTeamMoves.add(move.getEndPosition());
-                        }
-                    } else if (testPiece.getPieceType() == ChessPiece.PieceType.KING) {
-                        kingPosition = new ChessPosition(row, col);
-                    }
-                }
-            }
-        }
-        return opposingTeamMoves.contains(kingPosition);
+        Collection<ChessPosition> opposingTeamValidMoves = teamValidMovePositions(teamColor);
+        return opposingTeamValidMoves.contains(teamColor.getKingPosition());
     }
 
     /**
