@@ -86,6 +86,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        // Get moves for the piece, implement clone methods as needed, run each move in its own cloned test game, try and catch exception, remove from validmoves if exception caught, return list.
         throw new RuntimeException("Not implemented");
     }
 
@@ -116,7 +117,15 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece pieceToMove = board.getPiece(move.getStartPosition());
+        if(pieceToMove == null) {throw new InvalidMoveException("Move played on an empty space.")}
+        TeamColor pieceColor = pieceToMove.getTeamColor();
+        if(pieceColor != turnColor) {
+            throw new InvalidMoveException("Move played out of turn.");
+        } else if (!(pieceToMove.pieceMoves(board,move.getStartPosition()).contains(move))) {
+            throw new InvalidMoveException("Not a valid move by chess piece rules.");
+        }
+        // Make the move, check if in check, throw error, or leave it.
     }
 
     /**
