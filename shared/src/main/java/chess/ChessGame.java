@@ -93,8 +93,18 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        // Get moves for the piece, implement clone methods as needed, run each move in its own cloned test game, try and catch exception, remove from validmoves if exception caught, return list.
-        throw new RuntimeException("Not implemented");
+        ArrayList<ChessMove> validMoves = new ArrayList<>(board.getPiece(startPosition).pieceMoves(board,startPosition));
+        for(var move : validMoves) {
+            try {
+                ChessGame testGame = (ChessGame) this.clone();
+                testGame.makeMove(move);
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            } catch (InvalidMoveException e) {
+                validMoves.remove(move);
+            }
+        }
+        return validMoves;
     }
 
     private Collection<ChessPosition> teamValidMovePositions(TeamColor color) {
@@ -132,7 +142,14 @@ public class ChessGame {
         } else if (!(pieceToMove.pieceMoves(board,move.getStartPosition()).contains(move))) {
             throw new InvalidMoveException("Not a valid move by chess piece rules.");
         }
-        // Make the move, check if in check, throw error, or leave it.
+        if(move.getPromotionPiece() != null) {
+            pieceToMove = new ChessPiece(pieceToMove.getTeamColor(),move.getPromotionPiece());
+        }
+        board.addPiece(move.getEndPosition(),pieceToMove);
+        board.addPiece(move.getStartPosition(),null);
+        if(isInCheck(pieceToMove.getTeamColor())) {
+            throw new InvalidMoveException("This move would place your team in check.");
+        }
     }
 
     /**
