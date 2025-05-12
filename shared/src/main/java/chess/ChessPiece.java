@@ -39,6 +39,11 @@ public class ChessPiece {
         return Objects.hash(pieceColor, pieceType);
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
     /**
      * The various different chess piece options
      */

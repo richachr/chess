@@ -16,6 +16,20 @@ public class ChessBoard {
     }
 
     @Override
+    protected Object clone() throws CloneNotSupportedException {
+        ChessBoard newBoard = (ChessBoard) super.clone();
+        ChessPosition positionToClone = new ChessPosition(1, 1);
+        for(int i = 1; i < 9; i++) {
+            for(int j = 1; j < 9; j++) {
+                positionToClone.setRow(i);
+                positionToClone.setCol(j);
+                newBoard.addPiece(positionToClone, (ChessPiece) this.getPiece(positionToClone).clone());
+            }
+        }
+        return newBoard;
+    }
+
+    @Override
     public String toString() {
         return "ChessBoard{" +
                 "board=" + Arrays.toString(board) +

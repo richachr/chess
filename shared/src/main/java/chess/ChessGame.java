@@ -36,6 +36,13 @@ public class ChessGame {
         return Objects.hash(getBoard(), turnColor);
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        ChessGame newClone = (ChessGame) super.clone();
+        newClone.setBoard((ChessBoard) board.clone());
+        return newClone;
+    }
+
     /**
      * @return Which team's turn it is
      */
@@ -118,7 +125,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece pieceToMove = board.getPiece(move.getStartPosition());
-        if(pieceToMove == null) {throw new InvalidMoveException("Move played on an empty space.")}
+        if(pieceToMove == null) {throw new InvalidMoveException("Move played on an empty space.");}
         TeamColor pieceColor = pieceToMove.getTeamColor();
         if(pieceColor != turnColor) {
             throw new InvalidMoveException("Move played out of turn.");
