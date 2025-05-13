@@ -10,7 +10,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessGame {
+public class ChessGame implements Cloneable {
     ChessBoard board;
     TeamColor turnColor;
 
@@ -99,6 +99,7 @@ public class ChessGame {
                 ChessGame testGame = (ChessGame) this.clone();
                 testGame.makeMove(move);
             } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
                 throw new RuntimeException(e);
             } catch (InvalidMoveException e) {
                 validMoves.remove(move);
