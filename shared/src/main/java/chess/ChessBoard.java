@@ -18,15 +18,14 @@ public class ChessBoard implements Cloneable {
     @Override
     protected Object clone() throws CloneNotSupportedException {
         ChessBoard newBoard = (ChessBoard) super.clone();
-        ChessPosition positionToClone = new ChessPosition(1, 1);
-        for(int i = 1; i < 9; i++) {
-            for(int j = 1; j < 9; j++) {
-                positionToClone.setRow(i);
-                positionToClone.setCol(j);
-                if(this.getPiece(positionToClone) == null) {
-                    newBoard.addPiece(positionToClone,null);
+        var storedBoard = newBoard.board;
+        newBoard.board = new ChessPiece[8][8];
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                if(storedBoard[i][j] != null) {
+                    newBoard.board[i][j] = (ChessPiece) storedBoard[i][j].clone();
                 } else {
-                    newBoard.addPiece(positionToClone, (ChessPiece) this.getPiece(positionToClone).clone());
+                    newBoard.board[i][j] = null;
                 }
             }
         }
@@ -35,9 +34,7 @@ public class ChessBoard implements Cloneable {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "board=" + Arrays.toString(board) +
-                '}';
+        return Arrays.deepToString(board);
     }
 
     @Override
