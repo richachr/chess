@@ -109,10 +109,9 @@ public class ChessGame implements Cloneable {
                     validMoves.add(move);
                 }
             } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
                 throw new RuntimeException(e);
             } catch (InvalidMoveException e) {
-                System.out.println(e.toString());
+                System.out.println(e.getLocalizedMessage());
                 validMoves.remove(move);
             }
         }
@@ -130,7 +129,7 @@ public class ChessGame implements Cloneable {
                 testPiece = board.getPiece(testPosition);
                 if(testPiece != null && testPiece.getTeamColor() == color) {
                     Collection<ChessMove> validMoves;
-                    if(color == turnColor && simpleMode == false) {
+                    if(color == turnColor && !simpleMode) {
                         validMoves = this.validMoves(testPosition);
                     } else {
                         validMoves = testPiece.pieceMoves(board,testPosition);
