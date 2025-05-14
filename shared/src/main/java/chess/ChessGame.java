@@ -13,6 +13,7 @@ import java.util.Objects;
 public class ChessGame implements Cloneable {
     ChessBoard board;
     TeamColor turnColor;
+    boolean isTestGame;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -20,6 +21,7 @@ public class ChessGame implements Cloneable {
         turnColor = TeamColor.WHITE;
         TeamColor.WHITE.setKingPosition(new ChessPosition(1,5));
         TeamColor.BLACK.setKingPosition(new ChessPosition(8,5));
+        this.isTestGame = false;
     }
 
     @Override
@@ -93,39 +95,53 @@ public class ChessGame implements Cloneable {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ArrayList<ChessMove> validMoves = new ArrayList<>(board.getPiece(startPosition).pieceMoves(board,startPosition));
-        for(var move : validMoves) {
+        if(board.getPiece(startPosition) == null) {return null;}
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>(board.getPiece(startPosition).pieceMoves(board,startPosition));
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+        for(ChessMove move : possibleMoves) {
             try {
+                var preMoveBoard = this.board;
                 ChessGame testGame = (ChessGame) this.clone();
+                testGame.isTestGame = true;
                 testGame.makeMove(move);
+                assert preMoveBoard == this.board;
+                if(!testGame.simpleIsInCheck(this.board.getPiece(startPosition).getTeamColor())) {
+                    validMoves.add(move);
+                }
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             } catch (InvalidMoveException e) {
+                System.out.println(e.toString());
                 validMoves.remove(move);
             }
         }
         return validMoves;
     }
 
-    private Collection<ChessPosition> teamValidMovePositions(TeamColor color) {
+    private Collection<ChessPosition> teamValidMovePositions(TeamColor color, boolean simpleMode) {
         ChessPosition testPosition = new ChessPosition(1,1);
         ChessPiece testPiece;
-        ArrayList<ChessPosition> opposingTeamMoves = new ArrayList<>();
+        ArrayList<ChessPosition> teamMoves = new ArrayList<>();
         for(int row = 1; row <= 8; row++) {
             for(int col = 1; col <= 8; col++) {
                 testPosition.setRow(row);
                 testPosition.setCol(col);
                 testPiece = board.getPiece(testPosition);
-                if(testPiece != null && testPiece.getTeamColor() != color) {
-                    var validMoves = validMoves(testPosition);
+                if(testPiece != null && testPiece.getTeamColor() == color) {
+                    Collection<ChessMove> validMoves;
+                    if(color == turnColor && simpleMode == false) {
+                        validMoves = this.validMoves(testPosition);
+                    } else {
+                        validMoves = testPiece.pieceMoves(board,testPosition);
+                    }
                     for(ChessMove move : validMoves) {
-                        opposingTeamMoves.add(move.getEndPosition());
+                        teamMoves.add(move.getEndPosition());
                     }
                 }
             }
         }
-        return opposingTeamMoves;
+        return teamMoves;
     }
 
     /**
@@ -138,9 +154,10 @@ public class ChessGame implements Cloneable {
         ChessPiece pieceToMove = board.getPiece(move.getStartPosition());
         if(pieceToMove == null) {throw new InvalidMoveException("Move played on an empty space.");}
         TeamColor pieceColor = pieceToMove.getTeamColor();
-        if(pieceColor != turnColor) {
+        if(!isTestGame && pieceColor != turnColor) {
             throw new InvalidMoveException("Move played out of turn.");
-        } else if (!(pieceToMove.pieceMoves(board,move.getStartPosition()).contains(move))) {
+        }
+        else if (!(pieceToMove.pieceMoves(board,move.getStartPosition()).contains(move))) {
             throw new InvalidMoveException("Not a valid move by chess piece rules.");
         }
         if(move.getPromotionPiece() != null) {
@@ -148,9 +165,10 @@ public class ChessGame implements Cloneable {
         }
         board.addPiece(move.getEndPosition(),pieceToMove);
         board.addPiece(move.getStartPosition(),null);
-        if(isInCheck(pieceToMove.getTeamColor())) {
+        if(isInCheck(pieceColor)) {
             throw new InvalidMoveException("This move would place your team in check.");
         }
+        this.turnColor = turnColor.getOpponent();
     }
 
     /**
@@ -160,8 +178,28 @@ public class ChessGame implements Cloneable {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        Collection<ChessPosition> opposingTeamValidMoves = teamValidMovePositions(teamColor);
+        Collection<ChessPosition> opposingTeamValidMoves = teamValidMovePositions(teamColor.opponent,false);
+        findSetKingPosition();
         return opposingTeamValidMoves.contains(teamColor.getKingPosition());
+    }
+
+    public boolean simpleIsInCheck(TeamColor teamColor) {
+        Collection<ChessPosition> opposingTeamValidMoves = teamValidMovePositions(teamColor.opponent,true);
+        return opposingTeamValidMoves.contains(teamColor.getKingPosition());
+    }
+
+    private void findSetKingPosition() {
+        ChessPosition testPosition = new ChessPosition(1,1);
+        for(int i = 1; i < 9; i++) {
+            for(int j = 1; j < 9; j++) {
+                testPosition.setRow(i);
+                testPosition.setCol(j);
+                ChessPiece testPiece = board.getPiece(testPosition);
+                if(testPiece != null && testPiece.getPieceType() == ChessPiece.PieceType.KING) {
+                    testPiece.getTeamColor().setKingPosition(new ChessPosition(i,j));
+                }
+            }
+        }
     }
 
     /**
@@ -171,7 +209,7 @@ public class ChessGame implements Cloneable {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return isInCheck(teamColor) && teamValidMovePositions(teamColor).isEmpty();
+        return isInCheck(teamColor) && teamValidMovePositions(teamColor,false).isEmpty();
     }
 
     /**
@@ -182,7 +220,7 @@ public class ChessGame implements Cloneable {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return !isInCheck(teamColor) && teamValidMovePositions(teamColor).isEmpty();
+        return !isInCheck(teamColor) && teamValidMovePositions(teamColor,false).isEmpty();
     }
 
     /**
