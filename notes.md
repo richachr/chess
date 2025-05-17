@@ -192,3 +192,72 @@
 - Don't give away your implementations in names (security reasons).
 - Separate an interface and its implementation. Program to interfaces instead of concrete classes.
 - Don't repeat yourself.
+- InputStream	Represents data as an unbounded incoming sequence of bytes. Is an interface.
+- You can wrap an Input/OutputStream in filter Input/OutputStreams to create a pipeline.
+- OutputStream	Represents data as an unbounded outgoing sequence of bytes.
+- Convert streams to Readers/Writers using InputStreamReader/OutputStreamWriter.
+- Reader	Provides functionality for reading an InputStream as characters.
+- Writer	Provides functionality for writing characters to an output stream.
+- FileInputStream	Stream that uses a file as its source of data.
+- ByteArrayInputStream	Stream that uses a byte array as its source of data.
+- BufferedReader/Writer	Reader that wraps another reader and caches the reader's data in an attempt to optimize performance. Should almost always be used for efficiency on first layer reader/writer.
+- StringReader	Represents a String as an input reader.
+- PrintStream/Writer	Output stream that provides print functions such as println or printf
+- File	Provides basic directory and file operations such as create, exists, iterate, or delete. 
+- file.exists(), file.createNewFile(), file.delete() on a File(path) object. Files.readAllLines(path) reads all lines of a file into a list.
+- Scanner	Parses a file into Strings/tokens. Note that this class is in java.util.
+- RandomAccessFile    Uses a pointer to read/write to any location within a file. seek() or skipBytes() move the pointer, then read or write.
+- To use GSON, create a builder, create an object using the builder, use .fronJson(string, object type) to create a class instance, and .toJson(object) to create a JSON string.
+- JsonParsers parse JSON into trees. A JsonElement can be made into a JsonObject and traversed with .get(key)
+- To use GSON with custom classes, you need to create an adapter that extends TypeAdapter and override the read and write methods. Then, register the adapter with the builder.
+- GSON excludes transient and static fields, and can exclude others using excludeFieldsWithModifiers().
+- JSON supports numbers, strings, booleans, null, arrays, and objects.
+- JSON StreamParsers are very low-level and iterate through JsonEvent tokens. They're good for not having to store all the data and getting efficient random access.
+- A DOMParser parses a JSON object as a tree in one pass and returns a traversable tree structure. Create a tokener, then wrap it in a JSON object/array depending on the root of the JSON.
+- JsonObjects have toString methods for converting to JSON text.
+- Serialization converts an object into bytes, such as a string.
+- To serialize, use a GsonBuilder. To deserialize, use a Gson object.
+- To add a dependency, go to File > Project Structure > Modules > Dependencies > Add > Library > From Maven > Search.
+- Gson type adapters allow for customization and special circumstances, such as if Gson can't figure out how to deal with an object.
+- Register a type adapter using gson.registerTypeAdapter(class, new adapter instance)
+- Use gson.getAdapter() to get gson's internal adapter, then make a type adapter for subclasses with a switch statement and cast a superclass to the subclass.
+- Client is bridge between user and server, server is bridge between client and db.
+- A client connects, creates and sends a request to the server, the server does what is requested, sends a response, the client takes that and gives it to the user.
+- API: Functions and classes that can be called to use external functionalities not developed by you.
+- Software Design: Single Responsibility Principle, avoid code duplication, information hiding/encapsulation.
+- Endpoint: A function people can call from the web.
+- Model classes: Model the real world, store data, implement core algorithms. Stores data in memory.
+- Data access classes (DAO): Perform CRUD (create, read, update, delete) operations on a database.
+- Service classes: Use DAOs and model classes to perform application functions.
+- Handler Classes: Parse JSON requests, turn them into objects, call the services, receive the response, and send it back to the client as JSON.
+- GET: Retrieve data. POST: Submit data. PUT: Replace data. DELETE: Delete data.
+- curl: Universal command-line program for interacting with URLs. Does GET by default. 
+- -X specifies method, such as POST. -v is verbose. -d '{json}' allows you to send request data. -H lets you specify headers. -o file outputs to file. -D dumps headers to a file.
+- In class declarations, putting one or more comma-separated strings in <> will make it a generic type that can be used throughout the class.
+- Generic types cannot be instantiated with primitive types. Wrappers must be used.
+- When constructing a generic object, the type parameters can be excluded from the constructor since they're declared with the variable.
+- Methods can have generic types. If not in a generic class, the <T> is put right before the return type in the method declaration.
+- Generic type is inferred in method calls, but can be specified, like Arrays.<String>swap(...)
+- Generic types can be given boundaries by saying something like <T extends Cloneable & AutoCloseable>. If one of the bounds is a class (there can be only one), it must be first.
+- Generic types are invariant, not covariant.
+- ? is used as a wildcard, if you only use the superclass and don't reference the subclass. This means you can't mutate anything or add objects, etc.
+- ? super Class is an arbitrary supertype of Class, just as ? extends Class is an arbitrary subtype.
+- PECS: Producer extends, consumer super. Anything that produces data uses `extends`, anything that consumes data uses `super`.
+- For very generic operations, you can use just ? wildcard. ? cannot be used as a type, but if you use a helper method with a normal generic type, you can get around it.
+- Generic types can be passed to superclass arguments such as Class<T> extends ArrayList<T>. Extending non-generic types can just use those types and not have any generics on the subclass.
+- Interfaces can also use generics.
+- Lambdas: (params,...) -> {code}. Type is optional for params.
+- Lambdas in Java can only be put into a variable whose type is a functional interface. They can be passed in place of functional interfaces as well.
+- At runtime, JVM infers types, automatically constructs a class for the expression, and passes the class as a method call.
+- Functional interfaces are any interfaces with one abstract method.
+- Returns in lambdas are only necessary for more than one statement.
+- Predicate<T> takes a function to test, and returns whether the parameter causes that to be true or false.
+- If a lambda calls a single method on a single given parameter, you can use a method reference, such as System.out::println in place of the lambda expression. The :: specifies the method reference.
+- For static method references, do ClassName::methodName. For instance methods, do objectName::methodName. 
+- (x,y) -> x.methodName(y) becomes ClassName::methodName. To invoke the constructor, do ClassName::new
+- Use :name and req.params(":name") to use parameters from URL. * is a wildcard in URL and is accessed by `req.splat()[i]`.
+- req.body() is a string of the body. req.headers() is a map of headers and values. req.header(name) gets a specific header.
+- res.body(object) sets the body. res.status(200) sets the status code. res.headers() sets headers. Handlers return res.body() by convention.
+- Setting the static file location in spark must be done before mapping routes.Spark.staticFiles.location(pathString). The path is relative to the resources directory.
+- Configure the 404 not found page with Spark.notFound(htmlString) or notFound((req, res) -> method to read from a file).
+- Spark.before(lambda with req and res) and .after(lambda with req and res) allow you to run code before and after handlers. The first param can be a pattern matching string to restrict the paths. Spark.halt(status, string) allows you to throw errors.
