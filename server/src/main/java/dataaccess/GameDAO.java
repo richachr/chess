@@ -12,7 +12,7 @@ public interface GameDAO extends DataAccessObject {
 
     Collection<GameData> listGames();
 
-    void updateGame(GameData data);
+    void updateGame(GameData original, GameData replacement);
 
 
 }
