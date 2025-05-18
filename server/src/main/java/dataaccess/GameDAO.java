@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public interface GameDAO extends DataAccessObject {
 
-    int createGame(GameData data);
+    void createGame(GameData data);
 
     GameData getGame(int gameID);
 
