@@ -2,11 +2,12 @@ package dataaccess;
 
 import model.GameData;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class MemoryGameDAO implements GameDAO {
-    private static List<GameData> mainArray;
+    private static ArrayList<GameData> mainArray = new ArrayList<>();
 
     public void createGame(GameData data) {
         mainArray.add(data);
