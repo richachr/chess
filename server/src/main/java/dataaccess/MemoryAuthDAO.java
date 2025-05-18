@@ -16,7 +16,7 @@ public class MemoryAuthDAO implements AuthDAO {
 
     public AuthData getAuth(String authToken) {
         for(AuthData data : mainArray) {
-            if(data.authToken() == authToken) {
+            if(authToken.equals(data.authToken())) {
                 return data;
             }
         }
