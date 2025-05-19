@@ -4,7 +4,9 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
+import request.LoginRequest;
 import request.RegisterRequest;
+import result.LoginResult;
 import result.RegisterResult;
 
 import java.util.UUID;
@@ -24,7 +26,26 @@ public class UserService {
         users.createUser(new UserData(req.username(), req.password(), req.email()));
         String authToken = UUID.randomUUID().toString();
         var auth = new MemoryAuthDAO();
-        auth.createAuth(new AuthData(authToken,req.username()));
-        return new RegisterResult(req.username(),authToken);
+        auth.createAuth(new AuthData(req.username(), authToken));
+        return new RegisterResult(req.username(), authToken);
+    }
+
+    public LoginResult login(LoginRequest req) throws BadRequestException {
+        if(req.username() == null ||
+           req.password() == null) {
+            throw new BadRequestException();
+        }
+        var users = new MemoryUserDAO();
+        var userData = users.getUser(req.username());
+        if(userData == null) {
+            throw new NotFoundException("user not found");
+        }
+        if(!req.password().equals(userData.password())) {
+            throw new UnauthorizedException();
+        }
+        var auths = new MemoryAuthDAO();
+        String authToken = UUID.randomUUID().toString();
+        auths.createAuth(new AuthData(req.username(), authToken));
+        return new LoginResult(req.username(), authToken);
     }
 }
