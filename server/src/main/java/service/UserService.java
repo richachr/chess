@@ -5,6 +5,7 @@ import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
@@ -47,5 +48,20 @@ public class UserService {
         String authToken = UUID.randomUUID().toString();
         auths.createAuth(new AuthData(req.username(), authToken));
         return new LoginResult(req.username(), authToken);
+    }
+
+    public void logout(LogoutRequest req) throws BadRequestException, NotFoundException, InternalErrorException {
+        if(req.authToken() == null) {
+            throw new BadRequestException();
+        }
+        var auths = new MemoryAuthDAO();
+        var authData = auths.getAuth(req.authToken());
+        if(authData == null) {
+            throw new NotFoundException();
+        }
+        auths.deleteAuth(authData);
+        if(auths.getAuth(req.authToken()) != null) {
+            throw new InternalErrorException("deletion failed");
+        }
     }
 }
