@@ -25,8 +25,12 @@ public class MemoryGameDAO implements GameDAO {
         return mainArray;
     }
 
-    public void updateGame(GameData original, GameData replacement) {
-        mainArray.set(mainArray.indexOf(original), replacement);
+    public void updateGame(GameData original, GameData replacement) throws DataAccessException {
+        if(mainArray.contains(original)) {
+            mainArray.set(mainArray.indexOf(original), replacement);
+        } else {
+            throw new DataAccessException("Game to update not found.");
+        }
     }
 
     public void clear() {
