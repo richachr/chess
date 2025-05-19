@@ -31,7 +31,7 @@ public class UserService {
         return new RegisterResult(req.username(), authToken);
     }
 
-    public LoginResult login(LoginRequest req) throws BadRequestException {
+    public LoginResult login(LoginRequest req) throws BadRequestException, NotFoundException, UnauthorizedException {
         if(req.username() == null ||
            req.password() == null) {
             throw new BadRequestException();
