@@ -261,3 +261,21 @@
 - Setting the static file location in spark must be done before mapping routes.Spark.staticFiles.location(pathString). The path is relative to the resources directory.
 - Configure the 404 not found page with Spark.notFound(htmlString) or notFound((req, res) -> method to read from a file).
 - Spark.before(lambda with req and res) and .after(lambda with req and res) allow you to run code before and after handlers. The first param can be a pattern matching string to restrict the paths. Spark.halt(status, string) allows you to throw errors.
+- Method names should describe everything they do. Avoid useless verbs, don't overabbreviate, follow conventions.
+- Create new methods to decompose algorithms, reduce duplication, or avoid deep nesting.
+- Lots of comments may mean a method needs to be decomposed.
+- Methods should use all parameters, not use too many parameters (<7), order as in, in-out, out.
+- Initialize variables when they're declared, declare them near where they're used. Make sure counters are incremented.
+- Groups of closely related statements should be separated by blank lines.
+- Expressions should be parenthesized. Operands and operators should have spaces between them.
+- Separate conditions on separate lines. Expressions may be separated into well-named submethods.
+- Include spaces between method parameters.
+- Declare each variable on a separate line.
+- Wrap between 80 and 120 characters. Break on commas, equals, 
+- Write pseudo-code so that it is not language-specific, but it captures all pertinent details.
+- First character of class name is upper, first character of method and variable names are lower.
+- Constants are all caps with words separated by underscores.
+- Don't differentiate variable names by capitalization or have similar names for different things. 
+- Avoid words that are commonly misspelled or characters that look similar. Avoid digits in names.
+- Abbreviate consistently, remove vowels or clip, create names you can pronounce and abbreviate consistently.
+- IntelliJ can format in code menu. Selecting a directory and running the reformat will reformat all code in a directory.
