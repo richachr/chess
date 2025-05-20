@@ -1,9 +1,10 @@
 package server;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import request.RegisterRequest;
 import result.ErrorResult;
+import server.handler.ClearHandler;
+import server.handler.RegisterHandler;
 import service.AlreadyTakenException;
 import service.BadRequestException;
 import service.UserService;
@@ -17,10 +18,13 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.post("/game",(req, res) -> new RegisterHandler());
-
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
+        Spark.post("/user","application/json", (req, res) -> new RegisterHandler().handle(req, res));
+        Spark.post("/session", "application/json", (req, res) -> "Login");
+        Spark.delete("/session", "application/json", (req, res) -> "Logout");
+        Spark.get("/game", "application/json", (req, res) -> "List games");
+        Spark.post("/game", "application/json", (req, res) -> "Create game");
+        Spark.put("/game", "application/json", (req, res) -> "Join game");
+        Spark.delete("/db", "application/json", (req, res) -> new ClearHandler().handle(req,res));
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -30,29 +34,18 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
-}
 
-class RegisterHandler implements Route {
-    public Object handle(Request req, Response res) {
-        var gsonBuilder = new GsonBuilder().create();
-        RegisterRequest RegisterReq = gsonBuilder.fromJson(req.body(), RegisterRequest.class);
-        try {
-            var RegisterRes = UserService.register(RegisterReq);
-            res.status(200);
-            res.body(gsonBuilder.toJson(RegisterRes));
-        } catch (BadRequestException e) {
-            res.status(400);
+    public static void  handleException(Exception e) {
+        var gsonBuilder = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
+        if(e instanceof BadRequestException) {
             var errorResult = new ErrorResult(e.getLocalizedMessage());
-            res.body(gsonBuilder.toJson(errorResult));
-        } catch (AlreadyTakenException e) {
-            res.status(403);
+            Spark.halt(400, gsonBuilder.toJson(errorResult));
+        } else if(e instanceof AlreadyTakenException) {
             var errorResult = new ErrorResult(e.getLocalizedMessage());
-            res.body(gsonBuilder.toJson(errorResult));
-        } catch (Exception e) {
-            res.status(500);
+            Spark.halt(403, gsonBuilder.toJson(errorResult));
+        } else {
             var errorResult = new ErrorResult(e.getLocalizedMessage());
-            res.body(gsonBuilder.toJson(errorResult));
+            Spark.halt(500, gsonBuilder.toJson(errorResult));
         }
-        return res;
     }
 }
