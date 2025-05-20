@@ -1,8 +1,9 @@
 package result;
 
+import com.google.gson.annotations.Expose;
 import model.GameData;
 
 import java.util.Collection;
 
-public record ListGamesResult(Collection<GameData> games) {
+public record ListGamesResult(@Expose Collection<GameData> games) {
 }

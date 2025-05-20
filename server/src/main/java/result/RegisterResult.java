@@ -1,4 +1,6 @@
 package result;
 
-public record RegisterResult(String username, String authToken) {
+import com.google.gson.annotations.Expose;
+
+public record RegisterResult(@Expose String username, @Expose String authToken) {
 }

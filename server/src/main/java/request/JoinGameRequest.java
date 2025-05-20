@@ -1,4 +1,6 @@
 package request;
 
-public record JoinGameRequest(Integer gameID, String playerColor, String authToken) {
+import com.google.gson.annotations.Expose;
+
+public record JoinGameRequest(@Expose Integer gameID, @Expose String playerColor, @Expose String authToken) {
 }

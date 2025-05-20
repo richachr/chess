@@ -1,4 +1,6 @@
 package request;
 
-public record CreateGameRequest(String gameName, String authToken) {
+import com.google.gson.annotations.Expose;
+
+public record CreateGameRequest(@Expose String gameName, @Expose String authToken) {
 }
