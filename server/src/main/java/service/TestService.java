@@ -4,7 +4,7 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 
-public class TestService {
+public class TestService extends Service {
     public void clear() {
         var users = new MemoryUserDAO();
         var auths = new MemoryAuthDAO();

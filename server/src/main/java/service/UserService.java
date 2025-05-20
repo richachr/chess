@@ -12,7 +12,7 @@ import result.RegisterResult;
 
 import java.util.UUID;
 
-public class UserService {
+public class UserService extends Service {
     public RegisterResult register(RegisterRequest req) throws BadRequestException, AlreadyTakenException {
         if(req.username() == null ||
            req.email() == null ||
