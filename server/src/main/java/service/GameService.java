@@ -14,7 +14,7 @@ import result.ListGamesResult;
 
 public class GameService extends Service {
     public static int nextGameID = 0;
-    public ListGamesResult listGames(ListGamesRequest req) throws UnauthorizedException {
+    public static ListGamesResult listGames(ListGamesRequest req) throws UnauthorizedException {
         if(!Service.isAuthorized(req.authToken())) {
             throw new UnauthorizedException();
         }
@@ -22,7 +22,7 @@ public class GameService extends Service {
         return new ListGamesResult(games.listGames());
     }
 
-    public CreateGameResult createGame(CreateGameRequest req) throws BadRequestException, UnauthorizedException {
+    public static CreateGameResult createGame(CreateGameRequest req) throws BadRequestException, UnauthorizedException {
         if(req.gameName() == null ||
            req.authToken() == null) {
             throw new BadRequestException();
@@ -35,7 +35,7 @@ public class GameService extends Service {
         return new CreateGameResult(nextGameID);
     }
 
-    public void joinGame(JoinGameRequest req) throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException {
+    public static void joinGame(JoinGameRequest req) throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException {
         if(req.gameID() == null ||
            req.authToken() == null ||
            req.playerColor() == null) {

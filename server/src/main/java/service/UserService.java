@@ -13,7 +13,7 @@ import result.RegisterResult;
 import java.util.UUID;
 
 public class UserService extends Service {
-    public RegisterResult register(RegisterRequest req) throws BadRequestException, AlreadyTakenException {
+    public static RegisterResult register(RegisterRequest req) throws BadRequestException, AlreadyTakenException {
         if(req.username() == null ||
            req.email() == null ||
            req.password() == null) {
@@ -31,7 +31,7 @@ public class UserService extends Service {
         return new RegisterResult(req.username(), authToken);
     }
 
-    public LoginResult login(LoginRequest req) throws BadRequestException, NotFoundException, UnauthorizedException {
+    public static LoginResult login(LoginRequest req) throws BadRequestException, NotFoundException, UnauthorizedException {
         if(req.username() == null ||
            req.password() == null) {
             throw new BadRequestException();
@@ -50,7 +50,7 @@ public class UserService extends Service {
         return new LoginResult(req.username(), authToken);
     }
 
-    public void logout(LogoutRequest req) throws BadRequestException, NotFoundException, InternalErrorException {
+    public static void logout(LogoutRequest req) throws BadRequestException, NotFoundException, InternalErrorException {
         if(req.authToken() == null) {
             throw new BadRequestException();
         }
