@@ -1,19 +1,21 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
+import model.AuthData;
 import model.GameData;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.ListGamesRequest;
 import result.CreateGameResult;
 import result.ListGamesResult;
 
-public class GameService {
+public class GameService extends Service {
     public static int nextGameID = 0;
     public ListGamesResult listGames(ListGamesRequest req) throws UnauthorizedException {
-        var auths = new MemoryAuthDAO();
-        if(auths.getAuth(req.authToken()) == null) {
+        if(!Service.isAuthorized(req.authToken())) {
             throw new UnauthorizedException();
         }
         var games = new MemoryGameDAO();
@@ -25,12 +27,49 @@ public class GameService {
            req.authToken() == null) {
             throw new BadRequestException();
         }
-        var auths = new MemoryAuthDAO();
-        if(auths.getAuth(req.authToken()) == null) {
+        if(!Service.isAuthorized(req.authToken())) {
             throw new UnauthorizedException();
         }
         var games = new MemoryGameDAO();
         games.createGame(new GameData(++nextGameID, null, null, req.gameName(), new ChessGame()));
         return new CreateGameResult(nextGameID);
+    }
+
+    public void joinGame(JoinGameRequest req) throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException {
+        if(req.gameID() == null ||
+           req.authToken() == null ||
+           req.playerColor() == null) {
+            throw new BadRequestException();
+        }
+        var auths = new MemoryAuthDAO();
+        var authData = auths.getAuth(req.authToken());
+        if(authData == null) {
+            throw new UnauthorizedException();
+        }
+        var games = new MemoryGameDAO();
+        var gameData = games.getGame(req.gameID());
+        if(gameData == null) {
+            throw new NotFoundException();
+        }
+        if(gameData.isTaken(req.playerColor())) {
+            throw new AlreadyTakenException();
+        } else {
+            GameData newGameData = getNewGameData(req, gameData, authData);
+            try {
+                games.updateGame(gameData,newGameData);
+            } catch (DataAccessException e) {
+                throw new NotFoundException(e.getLocalizedMessage());
+            }
+        }
+    }
+
+    private static GameData getNewGameData(JoinGameRequest req, GameData gameData, AuthData authData) {
+        GameData newGameData;
+        switch(req.playerColor().toUpperCase()) {
+            case "WHITE" -> newGameData = new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+            case "BLACK" -> newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game());
+            default -> throw new RuntimeException("Unexpected team color.");
+        }
+        return newGameData;
     }
 }
