@@ -13,10 +13,10 @@ public class JoinGameHandler implements Route {
         res.type("application/json");
         var gsonBuilder = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
         JoinGameRequest temp = gsonBuilder.fromJson(req.body(), JoinGameRequest.class);
-        JoinGameRequest JoinReq = new JoinGameRequest(temp.gameID(), temp.playerColor(), req.headers("authorization"));
+        JoinGameRequest joinReq = new JoinGameRequest(temp.gameID(), temp.playerColor(), req.headers("authorization"));
         String jsonResponse = "";
         try {
-            GameService.joinGame(JoinReq);
+            GameService.joinGame(joinReq);
             res.status(200);
             jsonResponse = gsonBuilder.toJson(new Object());
             res.body(jsonResponse);

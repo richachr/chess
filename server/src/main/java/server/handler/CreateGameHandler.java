@@ -13,12 +13,12 @@ public class CreateGameHandler implements Route {
         res.type("application/json");
         var gsonBuilder = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
         CreateGameRequest temp = gsonBuilder.fromJson(req.body(), CreateGameRequest.class);
-        CreateGameRequest CreateReq = new CreateGameRequest(temp.gameName(), req.headers("authorization"));
+        CreateGameRequest createReq = new CreateGameRequest(temp.gameName(), req.headers("authorization"));
         String jsonResponse = "";
         try {
-            var CreateRes = GameService.createGame(CreateReq);
+            var createRes = GameService.createGame(createReq);
             res.status(200);
-            jsonResponse = gsonBuilder.toJson(CreateRes, CreateRes.getClass());
+            jsonResponse = gsonBuilder.toJson(createRes, createRes.getClass());
             res.body(jsonResponse);
         } catch (Exception e) {
             Server.handleException(e);

@@ -12,12 +12,12 @@ public class ListGamesHandler implements Route {
     public Object handle(Request req, Response res) {
         res.type("application/json");
         var gsonBuilder = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().serializeNulls().create();
-        ListGamesRequest ListReq = new ListGamesRequest(req.headers("authorization"));
+        ListGamesRequest listReq = new ListGamesRequest(req.headers("authorization"));
         String jsonResponse = "";
         try {
-            var ListGamesRes = GameService.listGames(ListReq);
+            var listRes = GameService.listGames(listReq);
             res.status(200);
-            jsonResponse = gsonBuilder.toJson(ListGamesRes, ListGamesRes.getClass());
+            jsonResponse = gsonBuilder.toJson(listRes, listRes.getClass());
             res.body(jsonResponse);
         } catch (Exception e) {
             Server.handleException(e);

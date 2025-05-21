@@ -12,10 +12,10 @@ public class LogoutHandler implements Route {
     public Object handle(Request req, Response res) {
         res.type("application/json");
         var gsonBuilder = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
-        LogoutRequest LogoutReq = new LogoutRequest(req.headers("authorization"));
+        LogoutRequest logoutReq = new LogoutRequest(req.headers("authorization"));
         String jsonResponse = "";
         try {
-            UserService.logout(LogoutReq);
+            UserService.logout(logoutReq);
             res.status(200);
             jsonResponse = gsonBuilder.toJson(new Object());
             res.body(jsonResponse);

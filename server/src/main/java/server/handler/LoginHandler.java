@@ -12,12 +12,12 @@ public class LoginHandler implements Route {
     public Object handle(Request req, Response res) {
         res.type("application/json");
         var gsonBuilder = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
-        LoginRequest LoginReq = gsonBuilder.fromJson(req.body(), LoginRequest.class);
+        LoginRequest loginReq = gsonBuilder.fromJson(req.body(), LoginRequest.class);
         String jsonResponse = "";
         try {
-            var LoginRes = UserService.login(LoginReq);
+            var loginRes = UserService.login(loginReq);
             res.status(200);
-            jsonResponse = gsonBuilder.toJson(LoginRes, LoginRes.getClass());
+            jsonResponse = gsonBuilder.toJson(loginRes, loginRes.getClass());
             res.body(jsonResponse);
         } catch (Exception e) {
             Server.handleException(e);
