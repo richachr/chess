@@ -14,8 +14,9 @@ import result.ListGamesResult;
 
 public class GameService extends Service {
     public static int nextGameID = 0;
+
     public static ListGamesResult listGames(ListGamesRequest req) throws UnauthorizedException {
-        if(!Service.isAuthorized(req.authToken())) {
+        if(Service.isNotAuthorized(req.authToken())) {
             throw new UnauthorizedException();
         }
         var games = new MemoryGameDAO();
@@ -27,7 +28,7 @@ public class GameService extends Service {
            req.authToken() == null) {
             throw new BadRequestException();
         }
-        if(!Service.isAuthorized(req.authToken())) {
+        if(Service.isNotAuthorized(req.authToken())) {
             throw new UnauthorizedException();
         }
         var games = new MemoryGameDAO();
@@ -38,7 +39,7 @@ public class GameService extends Service {
     public static void joinGame(JoinGameRequest req) throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException {
         if(req.gameID() == null ||
            req.authToken() == null ||
-           req.playerColor() == null) {
+           req.playerColor() == null || (req.playerColor().toUpperCase() != "WHITE" && req.playerColor().toUpperCase() != "BLACK")) {
             throw new BadRequestException();
         }
         var auths = new MemoryAuthDAO();
