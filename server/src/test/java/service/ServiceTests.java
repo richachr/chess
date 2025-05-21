@@ -119,7 +119,7 @@ public class ServiceTests {
     public void listGamesEmptyTest() {
         try {
             var userResponse = UserService.register(new RegisterRequest("user","password","email"));
-            Assertions.assertTrue(GameService.listGames(new ListGamesRequest(userResponse.authToken())).games().length == 0);
+            Assertions.assertEquals(GameService.listGames(new ListGamesRequest(userResponse.authToken())).games().length, 0);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
