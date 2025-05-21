@@ -21,9 +21,13 @@ public class ServiceTests {
         try {
             var userResponse = UserService.register(new RegisterRequest("user","password","email"));
             GameService.createGame(new CreateGameRequest("test", userResponse.authToken()));
-            Assertions.assertTrue(!MemoryAuthDAO.mainArray.isEmpty() && !MemoryGameDAO.mainArray.isEmpty() && !MemoryUserDAO.mainArray.isEmpty());
+            Assertions.assertTrue(!MemoryAuthDAO.mainArray.isEmpty() &&
+                                           !MemoryGameDAO.mainArray.isEmpty() &&
+                                           !MemoryUserDAO.mainArray.isEmpty());
             TestService.clear();
-            Assertions.assertTrue(MemoryAuthDAO.mainArray.isEmpty() && MemoryGameDAO.mainArray.isEmpty() && MemoryUserDAO.mainArray.isEmpty());
+            Assertions.assertTrue(MemoryAuthDAO.mainArray.isEmpty() &&
+                                           MemoryGameDAO.mainArray.isEmpty() &&
+                                           MemoryUserDAO.mainArray.isEmpty());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -41,16 +45,20 @@ public class ServiceTests {
 
     @Test
     public void registerBadRequestTest() {
-        Assertions.assertThrows(BadRequestException.class,() -> UserService.register(new RegisterRequest(null,"password","email")));
-        Assertions.assertThrows(BadRequestException.class,() -> UserService.register(new RegisterRequest("user",null,"email")));
-        Assertions.assertThrows(BadRequestException.class,() -> UserService.register(new RegisterRequest("user","password",null)));
+        Assertions.assertThrows(BadRequestException.class,() ->
+                                UserService.register(new RegisterRequest(null,"password","email")));
+        Assertions.assertThrows(BadRequestException.class,() ->
+                                UserService.register(new RegisterRequest("user",null,"email")));
+        Assertions.assertThrows(BadRequestException.class,() ->
+                                UserService.register(new RegisterRequest("user","password",null)));
     }
 
     @Test
     public void registerAlreadyTakenTest() {
         try {
             UserService.register(new RegisterRequest("user","password","email"));
-            Assertions.assertThrows(AlreadyTakenException.class, () -> UserService.register(new RegisterRequest("user", "password", "email")));
+            Assertions.assertThrows(AlreadyTakenException.class, () ->
+                                    UserService.register(new RegisterRequest("user", "password", "email")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -111,7 +119,8 @@ public class ServiceTests {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertThrows(NotFoundException.class, () -> UserService.logout(new LogoutRequest("this auth token does not exist in the database")));
+        Assertions.assertThrows(NotFoundException.class, () ->
+                                UserService.logout(new LogoutRequest("this auth token does not exist in the database")));
         Assertions.assertFalse(MemoryAuthDAO.mainArray.isEmpty());
     }
 
@@ -140,7 +149,8 @@ public class ServiceTests {
 
     @Test
     public void listGamesUnauthorizedTest() {
-        Assertions.assertThrows(UnauthorizedException.class, () -> GameService.createGame(new CreateGameRequest("game1", "fake auth token")));
+        Assertions.assertThrows(UnauthorizedException.class, () ->
+                                GameService.createGame(new CreateGameRequest("game1", "fake auth token")));
     }
 
     @Test
@@ -163,13 +173,16 @@ public class ServiceTests {
             throw new RuntimeException(e);
         }
         RegisterResult finalUserResponse = userResponse;
-        Assertions.assertThrows(BadRequestException.class, () -> GameService.createGame(new CreateGameRequest(null, finalUserResponse.authToken())));
-        Assertions.assertThrows(BadRequestException.class, () -> GameService.createGame(new CreateGameRequest("game1", null)));
+        Assertions.assertThrows(BadRequestException.class, () ->
+                                GameService.createGame(new CreateGameRequest(null, finalUserResponse.authToken())));
+        Assertions.assertThrows(BadRequestException.class, () ->
+                                GameService.createGame(new CreateGameRequest("game1", null)));
     }
 
     @Test
     public void createGameUnauthorizedTest() {
-        Assertions.assertThrows(UnauthorizedException.class, () -> GameService.createGame(new CreateGameRequest("game name", "another fake auth token")));
+        Assertions.assertThrows(UnauthorizedException.class, () ->
+                                GameService.createGame(new CreateGameRequest("game name", "another fake auth token")));
     }
 
     @Test
@@ -213,7 +226,8 @@ public class ServiceTests {
             var userResponse = UserService.register(new RegisterRequest("username1","password","email"));
             var gameResponse = GameService.createGame(new CreateGameRequest("game1", userResponse.authToken()));
             GameService.joinGame(new JoinGameRequest(gameResponse.gameID(), "WHITE", userResponse.authToken()));
-            Assertions.assertThrows(AlreadyTakenException.class, () -> GameService.joinGame(new JoinGameRequest(gameResponse.gameID(), "WHITE", userResponse.authToken())));
+            Assertions.assertThrows(AlreadyTakenException.class, () ->
+                                    GameService.joinGame(new JoinGameRequest(gameResponse.gameID(), "WHITE", userResponse.authToken())));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -67,8 +67,17 @@ public class GameService extends Service {
     private static GameData getNewGameData(JoinGameRequest req, GameData gameData, AuthData authData) {
         GameData newGameData;
         switch(req.playerColor().toUpperCase()) {
-            case "WHITE" -> newGameData = new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
-            case "BLACK" -> newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game());
+            case "WHITE" -> newGameData = new GameData(gameData.gameID(),
+                                                       authData.username(),
+                                                       gameData.blackUsername(),
+                                                       gameData.gameName(),
+                                                       gameData.game());
+
+            case "BLACK" -> newGameData = new GameData(gameData.gameID(),
+                                                       gameData.whiteUsername(),
+                                                       authData.username(),
+                                                       gameData.gameName(),
+                                                       gameData.game());
             default -> throw new RuntimeException("Unexpected team color.");
         }
         return newGameData;
