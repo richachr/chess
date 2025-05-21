@@ -279,3 +279,11 @@
 - Avoid words that are commonly misspelled or characters that look similar. Avoid digits in names.
 - Abbreviate consistently, remove vowels or clip, create names you can pronounce and abbreviate consistently.
 - IntelliJ can format in code menu. Selecting a directory and running the reformat will reformat all code in a directory.
+- In testing, individual parts and subsystems should be verified on their own and then assembled.
+- Unit (class) tests should be written by the developer and run often to catch new bugs.
+- Each test is a @test method. @BeforeAll, BeforeEach, AfterAll, AfterEach allow methods for setup/cleanup.
+- Assertions.assert...() is how you run checks.
+- @Timeout gives a time limit.
+- Code coverage only measures code executed, not expected results.
+- Branch coverage checks branches of if/else. Function coverage checks if any functions were left out.
+- Strive for 100% coverage.
