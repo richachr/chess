@@ -13,10 +13,6 @@ public class KnightMovesGenerator extends MovesGenerator {
         possibleMoves.add(new ChessPosition(row-1, col+2));
         possibleMoves.add(new ChessPosition(row-2, col-1));
         possibleMoves.add(new ChessPosition(row-1, col-2));
-        for(ChessPosition newPosition : possibleMoves) {
-            if(newPosition.isInBounds() && (board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != ownColor)) {
-                validMoves.add(new ChessMove(position, newPosition, null));
-            }
-        }
+        checkAndAddPossibleMoves();
     }
 }
