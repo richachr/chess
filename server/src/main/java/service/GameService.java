@@ -20,7 +20,7 @@ public class GameService extends Service {
             throw new UnauthorizedException();
         }
         var games = new MemoryGameDAO();
-        return new ListGamesResult(games.listGames());
+        return new ListGamesResult(games.listGames().toArray(GameData[]::new));
     }
 
     public static CreateGameResult createGame(CreateGameRequest req) throws BadRequestException, UnauthorizedException {
@@ -39,7 +39,7 @@ public class GameService extends Service {
     public static void joinGame(JoinGameRequest req) throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException {
         if(req.gameID() == null ||
            req.authToken() == null ||
-           req.playerColor() == null || (req.playerColor().toUpperCase() != "WHITE" && req.playerColor().toUpperCase() != "BLACK")) {
+           req.playerColor() == null || (!req.playerColor().equalsIgnoreCase("WHITE") && !req.playerColor().equalsIgnoreCase("BLACK"))) {
             throw new BadRequestException();
         }
         var auths = new MemoryAuthDAO();
