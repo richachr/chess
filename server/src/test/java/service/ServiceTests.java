@@ -169,7 +169,7 @@ public class ServiceTests {
 
     @Test
     public void createGameUnauthorizedTest() {
-        Assertions.assertThrows(BadRequestException.class, () -> GameService.createGame(new CreateGameRequest("game name", "another fake auth token")));
+        Assertions.assertThrows(UnauthorizedException.class, () -> GameService.createGame(new CreateGameRequest("game name", "another fake auth token")));
     }
 
     @Test
