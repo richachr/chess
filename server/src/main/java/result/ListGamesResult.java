@@ -5,5 +5,5 @@ import model.GameData;
 
 import java.util.Collection;
 
-public record ListGamesResult(@Expose Collection<GameData> games) {
+public record ListGamesResult(@Expose GameData[] games) {
 }
