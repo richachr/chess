@@ -1,13 +1,11 @@
 package server;
 
 import com.google.gson.GsonBuilder;
-import request.RegisterRequest;
 import result.ErrorResult;
 import server.handler.ClearHandler;
 import server.handler.RegisterHandler;
 import service.AlreadyTakenException;
 import service.BadRequestException;
-import service.UserService;
 import spark.*;
 
 public class Server {
