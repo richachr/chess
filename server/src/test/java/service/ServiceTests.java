@@ -112,7 +112,7 @@ public class ServiceTests {
             throw new RuntimeException(e);
         }
         Assertions.assertThrows(NotFoundException.class, () -> UserService.logout(new LogoutRequest("this auth token does not exist in the database")));
-        Assertions.assertTrue(!MemoryAuthDAO.mainArray.isEmpty());
+        Assertions.assertFalse(MemoryAuthDAO.mainArray.isEmpty());
     }
 
     @Test
@@ -156,7 +156,7 @@ public class ServiceTests {
 
     @Test
     public void createGameBadRequestTest() {
-        RegisterResult userResponse = null;
+        RegisterResult userResponse;
         try {
             userResponse = UserService.register(new RegisterRequest("user","password","email"));
         } catch (Exception e) {
@@ -178,7 +178,7 @@ public class ServiceTests {
             var userResponse = UserService.register(new RegisterRequest("username1","password","email"));
             var gameResponse = GameService.createGame(new CreateGameRequest("game1", userResponse.authToken()));
             GameService.joinGame(new JoinGameRequest(gameResponse.gameID(), "WHITE", userResponse.authToken()));
-            Assertions.assertTrue( new MemoryGameDAO().getGame(gameResponse.gameID()).whiteUsername() == "username1");
+            Assertions.assertSame("username1", new MemoryGameDAO().getGame(gameResponse.gameID()).whiteUsername());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -201,7 +201,7 @@ public class ServiceTests {
     public void joinGameNotFoundTest() {
         try {
             var userResponse = UserService.register(new RegisterRequest("username1","password","email"));
-            Assertions.assertThrows(NotFoundException.class, () -> GameService.joinGame(new JoinGameRequest(26, "WHITE", userResponse.authToken()));)
+            Assertions.assertThrows(NotFoundException.class, () -> GameService.joinGame(new JoinGameRequest(26, "WHITE", userResponse.authToken())));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -213,7 +213,7 @@ public class ServiceTests {
             var userResponse = UserService.register(new RegisterRequest("username1","password","email"));
             var gameResponse = GameService.createGame(new CreateGameRequest("game1", userResponse.authToken()));
             GameService.joinGame(new JoinGameRequest(gameResponse.gameID(), "WHITE", userResponse.authToken()));
-            Assertions.assertThrows(AlreadyTakenException.class, () -> GameService.joinGame(new JoinGameRequest(gameResponse.gameID(), "WHITE", userResponse.authToken())););
+            Assertions.assertThrows(AlreadyTakenException.class, () -> GameService.joinGame(new JoinGameRequest(gameResponse.gameID(), "WHITE", userResponse.authToken())));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
