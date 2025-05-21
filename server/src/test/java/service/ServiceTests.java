@@ -119,7 +119,7 @@ public class ServiceTests {
     public void listGamesEmptyTest() {
         try {
             var userResponse = UserService.register(new RegisterRequest("user","password","email"));
-            Assertions.assertTrue(GameService.listGames(new ListGamesRequest(userResponse.authToken())).games().isEmpty());
+            Assertions.assertTrue(GameService.listGames(new ListGamesRequest(userResponse.authToken())).games().length == 0);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -132,7 +132,7 @@ public class ServiceTests {
             GameService.createGame(new CreateGameRequest("game1", userResponse.authToken()));
             GameService.createGame(new CreateGameRequest("game2", userResponse.authToken()));
             GameService.createGame(new CreateGameRequest("game3", userResponse.authToken()));
-            Assertions.assertEquals(3,GameService.listGames(new ListGamesRequest(userResponse.authToken())).games().size());
+            Assertions.assertEquals(3,GameService.listGames(new ListGamesRequest(userResponse.authToken())).games().length);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
