@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class MemoryGameDAO implements GameDAO {
-    private static ArrayList<GameData> mainArray = new ArrayList<>();
+    public static ArrayList<GameData> mainArray = new ArrayList<>();
 
     public void createGame(GameData data) {
         mainArray.add(data);

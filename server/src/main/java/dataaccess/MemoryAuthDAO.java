@@ -3,12 +3,10 @@ package dataaccess;
 import model.AuthData;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class MemoryAuthDAO implements AuthDAO {
 
-    private static ArrayList<AuthData> mainArray = new ArrayList<>();
+    public static ArrayList<AuthData> mainArray = new ArrayList<>();
 
     public void createAuth(AuthData data) {
         mainArray.add(data);
