@@ -36,6 +36,7 @@ public class Server {
 
     public static void  handleException(Exception e) {
         var gsonBuilder = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
+        //noinspection IfCanBeSwitch
         if(e instanceof BadRequestException) {
             var errorResult = new ErrorResult(e.getLocalizedMessage());
             Spark.halt(400, gsonBuilder.toJson(errorResult));
