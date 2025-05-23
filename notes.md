@@ -287,3 +287,20 @@
 - Code coverage only measures code executed, not expected results.
 - Branch coverage checks branches of if/else. Function coverage checks if any functions were left out.
 - Strive for 100% coverage.
+- Artificial primary keys are usually better at the cost of readability and requiring joins. Primary keys can span many rows.
+- Foreign keys refer to primary keys in other tables.
+- In UML, a box is a class, the top is the name, middle is the variables, bottom is the methods. Solid line is inheritance. 
+- Horizontal partitioning: Each concrete class is a table. Vertical partitioning: Each concrete and abstract class is a table. Unification: Subclasses are all merged into one big table.
+- SQL supports CHAR(n), VARCHAR(n), BIT(n), BIT VARYING(n), INTEGER, SMALLINT, FLOAT, REAL, DOUBLE, NUMERIC/DECIMAL(precision, scale), BLOB (binary large object), CLOB, DATE, TIME, TIMETZ (time zone), TIMESTAMP, TIMESTAMPTZ types.
+- Try with resources variables must be declared inside the parentheses, and to enlarge the scope you can have a separate outside variable.
+- To use database, create connection url, try with resources for the connection, start transaction, try with resources to prepare a statement, execute the statement and save to a ResultSet, while hasNext use getInt/String/...(index or column name) to get values from each row (STARTING AT 1), catch errors, commit/rollback.
+- To update or use user-provided values, put question marks in the SQL string and use statement.setString/Int/...(index starting at 1, value).
+- statement.executeUpdate returns # of rows affected.
+- To retrieve auto generated keys, add a parameter to the prepared statement, Statement.RETURN_GENERATED_KEYS, and use statement.getGeneratedKeys in a try with resources.
+- ResultSet pointers begin one above the first row, so .next() must be called.
+- When rolling back, check if connection is null first.
+- To give a user permissions to access the database, CREATE USER 'username'@'url' IDENTIFIED BY 'password'; GRANT ALL ON database.* to 'username'@'url'
+- getConnection can take a third parameter, with the string, username, and password.
+- Begin a transaction with connection.setAutoCommit(false);
+- To reset auto increment, ALTER TABLE tableName AUTO_INCREMENT = 1
+- When testing databases, clean up or roll back after each test.
