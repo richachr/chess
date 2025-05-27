@@ -13,7 +13,6 @@ import result.CreateGameResult;
 import result.ListGamesResult;
 
 public class GameService extends Service {
-    public static int nextGameID = 0;
 
     public static ListGamesResult listGames(ListGamesRequest req) throws UnauthorizedException {
         if(Service.isNotAuthorized(req.authToken())) {
@@ -32,8 +31,8 @@ public class GameService extends Service {
             throw new UnauthorizedException();
         }
         var games = new MemoryGameDAO();
-        games.createGame(new GameData(++nextGameID, null, null, req.gameName(), new ChessGame()));
-        return new CreateGameResult(nextGameID);
+        int gameId = games.createGame(new GameData(null, null, null, req.gameName(), new ChessGame()));
+        return new CreateGameResult(gameId);
     }
 
     public static void joinGame(JoinGameRequest req) throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException {
