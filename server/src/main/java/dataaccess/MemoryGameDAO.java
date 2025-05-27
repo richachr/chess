@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class MemoryGameDAO implements GameDAO {
+    public static int nextGameID = 0;
     public static ArrayList<GameData> mainArray = new ArrayList<>();
 
-    public void createGame(GameData data) {
-        mainArray.add(data);
+    public int createGame(GameData data) {
+        mainArray.add(new GameData(nextGameID++, data.whiteUsername(), data.blackUsername(), data.gameName(), data.game()));
+        return nextGameID;
     }
 
     public GameData getGame(int gameID) {
