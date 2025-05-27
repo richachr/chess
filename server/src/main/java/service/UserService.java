@@ -4,6 +4,7 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
@@ -24,7 +25,7 @@ public class UserService extends Service {
         if(existingUserData != null) {
             throw new AlreadyTakenException();
         }
-        users.createUser(new UserData(req.username(), req.password(), req.email()));
+        users.createUser(new UserData(req.username(), BCrypt.hashpw(req.password(),BCrypt.gensalt()), req.email()));
         String authToken = UUID.randomUUID().toString();
         var auth = new MemoryAuthDAO();
         auth.createAuth(new AuthData(req.username(), authToken));
@@ -41,7 +42,7 @@ public class UserService extends Service {
         if(userData == null) {
             throw new NotFoundException("user not found");
         }
-        if(!req.password().equals(userData.password())) {
+        if(!BCrypt.checkpw(req.password(),userData.password())) {
             throw new UnauthorizedException();
         }
         var auths = new MemoryAuthDAO();
