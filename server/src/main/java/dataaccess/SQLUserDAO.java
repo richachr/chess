@@ -14,7 +14,7 @@ public class SQLUserDAO implements UserDAO {
                      email VARCHAR(255) NOT NULL
                      );
                      """;
-        try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql);) {
+        try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
             statement.executeUpdate();
         }
     }
@@ -34,8 +34,19 @@ public class SQLUserDAO implements UserDAO {
         }
     }
 
-    public UserData getUser(String username) {
-
+    public UserData getUser(String username) throws DataAccessException {
+        String sql = """
+                     SELECT * FROM user
+                     WHERE username = ?;
+                     """;
+        try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
+            statement.setString(1, username);
+            var rs = statement.executeQuery();
+            rs.next();
+            return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getLocalizedMessage());
+        }
     }
 
     public void clear() throws DataAccessException {
