@@ -304,3 +304,10 @@
 - Begin a transaction with connection.setAutoCommit(false);
 - To reset auto increment, ALTER TABLE tableName AUTO_INCREMENT = 1
 - When testing databases, clean up or roll back after each test.
+- To start and stop MySQL in Linux, use sudo systemctl status/start/stop mysql.
+- New users in SQL must be granted permissions.
+- Step over runs a method, step into goes into a method.
+- Right clicking a set breakpoint allows us to write java code as a conditional boolean expression for the breakpoint to stop on.
+- Watches allow us to write java code to run at any breakpoint.
+- Under Run > View Breakpoints, you can view all breakpoints or set exception breakpoints, including for specific exception types.
+- Caller/Class filters: Only pause on the breakpoint if it comes from a specific method/class
