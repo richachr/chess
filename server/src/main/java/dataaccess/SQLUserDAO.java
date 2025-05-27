@@ -5,7 +5,7 @@ import model.UserData;
 import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO {
-    public SQLUserDAO() throws DataAccessException, SQLException {
+    public SQLUserDAO() throws DataAccessException {
         DatabaseManager.createDatabase();
         String sql = """
                      CREATE TABLE IF NOT EXISTS user (
@@ -16,6 +16,8 @@ public class SQLUserDAO implements UserDAO {
                      """;
         try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getLocalizedMessage());
         }
     }
 
