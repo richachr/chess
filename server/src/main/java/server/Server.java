@@ -10,7 +10,7 @@ import service.UnauthorizedException;
 import spark.*;
 
 public class Server {
-    public final boolean  USE_MEMORY_DAO = false;
+    public static final boolean  USE_MEMORY_DAO = false;
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
