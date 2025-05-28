@@ -8,7 +8,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class CreateGameHandler implements Route {
+public class CreateGameHandler extends Handler implements Route {
+    public CreateGameHandler(boolean useMemoryDao) {
+        super(useMemoryDao);
+    }
+
     public Object handle(Request req, Response res) {
         res.type("application/json");
         var gsonBuilder = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
@@ -16,7 +20,7 @@ public class CreateGameHandler implements Route {
         CreateGameRequest createReq = new CreateGameRequest(temp.gameName(), req.headers("authorization"));
         String jsonResponse = "";
         try {
-            var createRes = GameService.createGame(createReq);
+            var createRes = GameService.createGame(createReq, useMemoryDao);
             res.status(200);
             jsonResponse = gsonBuilder.toJson(createRes, createRes.getClass());
             res.body(jsonResponse);

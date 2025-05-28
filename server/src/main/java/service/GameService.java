@@ -1,9 +1,7 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import request.CreateGameRequest;
@@ -14,15 +12,20 @@ import result.ListGamesResult;
 
 public class GameService extends Service {
 
-    public static ListGamesResult listGames(ListGamesRequest req) throws UnauthorizedException {
+    public static ListGamesResult listGames(ListGamesRequest req, boolean useMemoryDao) throws UnauthorizedException, DataAccessException {
         if(Service.isNotAuthorized(req.authToken())) {
             throw new UnauthorizedException();
         }
-        var games = new MemoryGameDAO();
+        GameDAO games;
+        if(useMemoryDao) {
+            games = new MemoryGameDAO();
+        } else {
+            games = new SQLGameDAO();
+        }
         return new ListGamesResult(games.listGames().toArray(GameData[]::new));
     }
 
-    public static CreateGameResult createGame(CreateGameRequest req) throws BadRequestException, UnauthorizedException {
+    public static CreateGameResult createGame(CreateGameRequest req, boolean useMemoryDao) throws BadRequestException, UnauthorizedException, DataAccessException {
         if(req.gameName() == null ||
            req.authToken() == null) {
             throw new BadRequestException();
@@ -30,23 +33,35 @@ public class GameService extends Service {
         if(Service.isNotAuthorized(req.authToken())) {
             throw new UnauthorizedException();
         }
-        var games = new MemoryGameDAO();
+        GameDAO games;
+        if(useMemoryDao) {
+            games = new MemoryGameDAO();
+        } else {
+            games = new SQLGameDAO();
+        }
         int gameId = games.createGame(new GameData(null, null, null, req.gameName(), new ChessGame()));
         return new CreateGameResult(gameId);
     }
 
-    public static void joinGame(JoinGameRequest req) throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException {
+    public static void joinGame(JoinGameRequest req, boolean useMemoryDao) throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException, DataAccessException {
         if(req.gameID() == null ||
            req.authToken() == null ||
            req.playerColor() == null || (!req.playerColor().equalsIgnoreCase("WHITE") && !req.playerColor().equalsIgnoreCase("BLACK"))) {
             throw new BadRequestException();
         }
-        var auths = new MemoryAuthDAO();
+        GameDAO games;
+        AuthDAO auths;
+        if(useMemoryDao) {
+            games = new MemoryGameDAO();
+            auths = new MemoryAuthDAO();
+        } else {
+            games = new SQLGameDAO();
+            auths = new SQLAuthDAO();
+        }
         var authData = auths.getAuth(req.authToken());
         if(authData == null) {
             throw new UnauthorizedException();
         }
-        var games = new MemoryGameDAO();
         var gameData = games.getGame(req.gameID());
         if(gameData == null) {
             throw new NotFoundException();

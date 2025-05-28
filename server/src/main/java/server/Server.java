@@ -10,6 +10,7 @@ import service.UnauthorizedException;
 import spark.*;
 
 public class Server {
+    public final boolean  USE_MEMORY_DAO = false;
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -17,13 +18,13 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.post("/user","application/json", (req, res) -> new RegisterHandler().handle(req, res));
-        Spark.post("/session", "application/json", (req, res) -> new LoginHandler().handle(req, res));
-        Spark.delete("/session", "application/json", (req, res) -> new LogoutHandler().handle(req, res));
-        Spark.get("/game", "application/json", (req, res) -> new ListGamesHandler().handle(req, res));
-        Spark.post("/game", "application/json", (req, res) -> new CreateGameHandler().handle(req, res));
-        Spark.put("/game", "application/json", (req, res) -> new JoinGameHandler().handle(req, res));
-        Spark.delete("/db", "application/json", (req, res) -> new ClearHandler().handle(req,res));
+        Spark.post("/user","application/json", (req, res) -> new RegisterHandler(USE_MEMORY_DAO).handle(req, res));
+        Spark.post("/session", "application/json", (req, res) -> new LoginHandler(USE_MEMORY_DAO).handle(req, res));
+        Spark.delete("/session", "application/json", (req, res) -> new LogoutHandler(USE_MEMORY_DAO).handle(req, res));
+        Spark.get("/game", "application/json", (req, res) -> new ListGamesHandler(USE_MEMORY_DAO).handle(req, res));
+        Spark.post("/game", "application/json", (req, res) -> new CreateGameHandler(USE_MEMORY_DAO).handle(req, res));
+        Spark.put("/game", "application/json", (req, res) -> new JoinGameHandler(USE_MEMORY_DAO).handle(req, res));
+        Spark.delete("/db", "application/json", (req, res) -> new ClearHandler(USE_MEMORY_DAO).handle(req,res));
 
         Spark.awaitInitialization();
         return Spark.port();
