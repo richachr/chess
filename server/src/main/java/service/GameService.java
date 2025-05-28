@@ -13,7 +13,7 @@ import result.ListGamesResult;
 public class GameService extends Service {
 
     public static ListGamesResult listGames(ListGamesRequest req, boolean useMemoryDao) throws UnauthorizedException, DataAccessException {
-        if(Service.isNotAuthorized(req.authToken())) {
+        if(Service.isNotAuthorized(req.authToken(), useMemoryDao)) {
             throw new UnauthorizedException();
         }
         GameDAO games;
@@ -30,7 +30,7 @@ public class GameService extends Service {
            req.authToken() == null) {
             throw new BadRequestException();
         }
-        if(Service.isNotAuthorized(req.authToken())) {
+        if(Service.isNotAuthorized(req.authToken(), useMemoryDao)) {
             throw new UnauthorizedException();
         }
         GameDAO games;
