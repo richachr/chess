@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.GameData;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -18,7 +19,9 @@ public class SQLGameDAO implements GameDAO {
                      white_username VARCHAR(255),
                      black_username VARCHAR(255),
                      name VARCHAR(255) NOT NULL,
-                     object_data TEXT NOT NULL
+                     object_data TEXT NOT NULL,
+                     FOREIGN KEY (white_username) REFERENCES user(username) ON UPDATE CASCADE ON DELETE CASCADE,
+                     FOREIGN KEY (black_username) REFERENCES user(username) ON UPDATE CASCADE ON DELETE CASCADE
                      );
                      """;
         try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
@@ -33,7 +36,7 @@ public class SQLGameDAO implements GameDAO {
                      INSERT INTO  game (white_username, black_username, name, object_data)
                      VALUES (?, ?, ?, ?);
                      """;
-        try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
+        try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, data.whiteUsername());
             statement.setString(2, data.blackUsername());
             statement.setString(3, data.gameName());
@@ -59,13 +62,16 @@ public class SQLGameDAO implements GameDAO {
         try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
             statement.setInt(1, gameID);
             var rs = statement.executeQuery();
-            rs.next();
-            ChessGame game = new Gson().fromJson(rs.getString("object_data"), ChessGame.class);
-            return new GameData(rs.getInt("id"),
-                                rs.getString("white_username"),
-                                rs.getString("black_username"),
-                                rs.getString("name"),
-                                game);
+            if(rs.next()) {
+                ChessGame game = new Gson().fromJson(rs.getString("object_data"), ChessGame.class);
+                return new GameData(rs.getInt("id"),
+                                    rs.getString("white_username"),
+                                    rs.getString("black_username"),
+                                    rs.getString("name"),
+                                    game);
+            } else {
+                return null;
+            }
         } catch (SQLException e) {
             throw new DataAccessException(e.getLocalizedMessage());
         }
