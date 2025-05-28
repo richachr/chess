@@ -10,7 +10,7 @@ public class MemoryGameDAO implements GameDAO {
     public static ArrayList<GameData> mainArray = new ArrayList<>();
 
     public int createGame(GameData data) {
-        mainArray.add(new GameData(nextGameID++, data.whiteUsername(), data.blackUsername(), data.gameName(), data.game()));
+        mainArray.add(new GameData(++nextGameID, data.whiteUsername(), data.blackUsername(), data.gameName(), data.game()));
         return nextGameID;
     }
 
