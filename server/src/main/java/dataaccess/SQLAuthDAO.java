@@ -10,8 +10,9 @@ public class SQLAuthDAO implements AuthDAO {
         String sql = """
                      CREATE TABLE IF NOT EXISTS auth (
                      username VARCHAR(64) NOT NULL,
-                     authToken CHAR(36) NOT NULL,
-                     PRIMARY KEY (username, auth_token)
+                     auth_token CHAR(36) NOT NULL,
+                     PRIMARY KEY (username, auth_token),
+                     FOREIGN KEY (username) REFERENCES user(username) ON UPDATE CASCADE ON DELETE CASCADE
                      );
                      """;
         try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
@@ -43,8 +44,11 @@ public class SQLAuthDAO implements AuthDAO {
         try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
             statement.setString(1, authToken);
             var rs = statement.executeQuery();
-            rs.next();
-            return new AuthData(rs.getString("username"), rs.getString("authToken"));
+            if(rs.next()) {
+                return new AuthData(rs.getString("username"), rs.getString("auth_token"));
+            } else {
+                return null;
+            }
         } catch (SQLException e) {
             throw new DataAccessException(e.getLocalizedMessage());
         }
