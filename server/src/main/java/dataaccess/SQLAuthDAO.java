@@ -62,7 +62,10 @@ public class SQLAuthDAO implements AuthDAO {
         try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
             statement.setString(1, data.username());
             statement.setString(2, data.authToken());
-            statement.executeUpdate();
+            var rs = statement.executeUpdate();
+            if(rs != 1) {
+                throw new DataAccessException("No auth data found to delete.");
+            }
         } catch (SQLException e) {
             throw new DataAccessException(e.getLocalizedMessage());
         }
