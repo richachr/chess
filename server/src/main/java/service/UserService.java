@@ -13,7 +13,8 @@ import result.RegisterResult;
 import java.util.UUID;
 
 public class UserService extends Service {
-    public static RegisterResult register(RegisterRequest req, boolean useMemoryDao) throws BadRequestException, AlreadyTakenException, DataAccessException {
+    public static RegisterResult register(RegisterRequest req, boolean useMemoryDao)
+            throws BadRequestException, AlreadyTakenException, DataAccessException {
         if(req.username() == null ||
            req.email() == null ||
            req.password() == null) {
@@ -38,7 +39,8 @@ public class UserService extends Service {
         return new RegisterResult(req.username(), authToken);
     }
 
-    public static LoginResult login(LoginRequest req, boolean useMemoryDao) throws BadRequestException, NotFoundException, UnauthorizedException, DataAccessException {
+    public static LoginResult login(LoginRequest req, boolean useMemoryDao)
+            throws BadRequestException, NotFoundException, UnauthorizedException, DataAccessException {
         if(req.username() == null ||
            req.password() == null) {
             throw new BadRequestException();
@@ -64,7 +66,8 @@ public class UserService extends Service {
         return new LoginResult(req.username(), authToken);
     }
 
-    public static void logout(LogoutRequest req, boolean useMemoryDao) throws BadRequestException, NotFoundException, InternalErrorException, DataAccessException {
+    public static void logout(LogoutRequest req, boolean useMemoryDao)
+            throws BadRequestException, NotFoundException, InternalErrorException, DataAccessException {
         if(req.authToken() == null) {
             throw new BadRequestException();
         }

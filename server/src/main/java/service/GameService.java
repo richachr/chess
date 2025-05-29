@@ -25,7 +25,8 @@ public class GameService extends Service {
         return new ListGamesResult(games.listGames().toArray(GameData[]::new));
     }
 
-    public static CreateGameResult createGame(CreateGameRequest req, boolean useMemoryDao) throws BadRequestException, UnauthorizedException, DataAccessException {
+    public static CreateGameResult createGame(CreateGameRequest req, boolean useMemoryDao)
+            throws BadRequestException, UnauthorizedException, DataAccessException {
         if(req.gameName() == null ||
            req.authToken() == null) {
             throw new BadRequestException();
@@ -43,7 +44,8 @@ public class GameService extends Service {
         return new CreateGameResult(gameId);
     }
 
-    public static void joinGame(JoinGameRequest req, boolean useMemoryDao) throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException, DataAccessException {
+    public static void joinGame(JoinGameRequest req, boolean useMemoryDao)
+            throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException, DataAccessException {
         if(req.gameID() == null ||
            req.authToken() == null ||
            req.playerColor() == null || (!req.playerColor().equalsIgnoreCase("WHITE") && !req.playerColor().equalsIgnoreCase("BLACK"))) {

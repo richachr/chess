@@ -417,12 +417,19 @@ public class DAOTests {
         try {
             var initialData = new GameData(-1, null, null, "fun game", new ChessGame());
             var createResult = new SQLGameDAO().createGame(initialData);
-            initialData = new GameData(createResult, initialData.whiteUsername(), initialData.blackUsername(), initialData.gameName(), initialData.game());
+            initialData = new GameData(createResult,
+                                       initialData.whiteUsername(),
+                                       initialData.blackUsername(),
+                                       initialData.gameName(),
+                                       initialData.game());
             new SQLUserDAO().createUser(new UserData("white", "password", "email"));
             new SQLUserDAO().createUser(new UserData("black", "password", "email"));
-            new SQLGameDAO().updateGame(initialData, new GameData(initialData.gameID(), "white", null, initialData.gameName(), initialData.game()));
-            new SQLGameDAO().updateGame(initialData, new GameData(initialData.gameID(), "white", "black", initialData.gameName(), initialData.game()));
-            new SQLGameDAO().updateGame(initialData, new GameData(initialData.gameID(), "white", "black", "new name", initialData.game()));
+            new SQLGameDAO().updateGame(initialData,
+                                        new GameData(initialData.gameID(), "white", null, initialData.gameName(), initialData.game()));
+            new SQLGameDAO().updateGame(initialData,
+                                        new GameData(initialData.gameID(), "white", "black", initialData.gameName(), initialData.game()));
+            new SQLGameDAO().updateGame(initialData,
+                                        new GameData(initialData.gameID(), "white", "black", "new name", initialData.game()));
             initialData.game().setTeamTurn(ChessGame.TeamColor.BLACK);
             var expectedGame = new GameData(initialData.gameID(), "white", "black", "new name", initialData.game());
             new SQLGameDAO().updateGame(initialData, expectedGame);

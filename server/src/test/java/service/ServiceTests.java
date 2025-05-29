@@ -219,7 +219,8 @@ public class ServiceTests {
     public void joinGameNotFoundTest() {
         try {
             var userResponse = UserService.register(new RegisterRequest("username1","password","email"), true);
-            Assertions.assertThrows(NotFoundException.class, () -> GameService.joinGame(new JoinGameRequest(26, "WHITE", userResponse.authToken()), true));
+            Assertions.assertThrows(NotFoundException.class, () ->
+                    GameService.joinGame(new JoinGameRequest(26, "WHITE", userResponse.authToken()), true));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
