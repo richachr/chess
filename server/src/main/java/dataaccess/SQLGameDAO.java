@@ -16,8 +16,8 @@ public class SQLGameDAO implements GameDAO {
         String sql = """
                      CREATE TABLE IF NOT EXISTS game (
                      id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                     white_username VARCHAR(255),
-                     black_username VARCHAR(255),
+                     white_username VARCHAR(64),
+                     black_username VARCHAR(64),
                      name VARCHAR(255) NOT NULL,
                      object_data TEXT NOT NULL,
                      FOREIGN KEY (white_username) REFERENCES user(username) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -40,6 +40,9 @@ public class SQLGameDAO implements GameDAO {
             statement.setString(1, data.whiteUsername());
             statement.setString(2, data.blackUsername());
             statement.setString(3, data.gameName());
+            if(data.game() == null) {
+                throw new DataAccessException("No game object provided.");
+            }
             var gameDataText = new Gson().toJson(data.game());
             statement.setString(4, gameDataText);
             statement.executeUpdate();
@@ -117,6 +120,9 @@ public class SQLGameDAO implements GameDAO {
                     updateStatement.setString(1, replacement.whiteUsername());
                     updateStatement.setString(2, replacement.blackUsername());
                     updateStatement.setString(3, replacement.gameName());
+                    if(replacement.game() == null) {
+                        throw new DataAccessException("No game object provided.");
+                    }
                     var gameDataText = new Gson().toJson(replacement.game());
                     updateStatement.setString(4, gameDataText);
                     updateStatement.setInt(5, original.gameID());
@@ -134,6 +140,10 @@ public class SQLGameDAO implements GameDAO {
         String sql = "DELETE FROM game;";
         try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
             statement.executeUpdate();
+            sql = "ALTER TABLE game AUTO_INCREMENT = 1;";
+            try(var resetStatement = conn.prepareStatement(sql)) {
+                resetStatement.executeUpdate();
+            }
         } catch (SQLException e) {
             throw new DataAccessException(e.getLocalizedMessage());
         }
