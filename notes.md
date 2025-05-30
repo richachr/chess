@@ -311,4 +311,7 @@
 - Watches allow us to write java code to run at any breakpoint.
 - Under Run > View Breakpoints, you can view all breakpoints or set exception breakpoints, including for specific exception types.
 - Caller/Class filters: Only pause on the breakpoint if it comes from a specific method/class
-- 
+- ANSI escape codes can clear terminal, set cursor position, set background and text color, set bold/italic/underline.
+- You can edit the run config to allow multiple instances.
+- REPL: Read, evaluate, print loop
+- One REPL, three clients for Chess.
