@@ -24,7 +24,7 @@ public class InputLoop {
             System.out.printf("%s > " + EscapeSequences.SET_TEXT_BLINKING, prefix);
             userInput = inputScanner.nextLine();
             System.out.print(EscapeSequences.RESET_TEXT_BLINKING);
-            state.getClient().processInput(userInput);
+            state.getClient().processInput(userInput, facade);
         }
     }
 
