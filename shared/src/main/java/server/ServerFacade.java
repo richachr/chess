@@ -2,10 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import request.*;
-import result.CreateGameResult;
-import result.ListGamesResult;
-import result.LoginResult;
-import result.RegisterResult;
+import result.*;
 
 import java.io.*;
 import java.net.*;
@@ -94,11 +91,12 @@ public class ServerFacade {
             InputStreamReader inputReader = new InputStreamReader(in);
             BufferedReader reader = new BufferedReader(inputReader)) {
             String line;
-            StringBuilder errorMsg = new StringBuilder();
+            StringBuilder rawErrorMsg = new StringBuilder();
             while((line = reader.readLine()) != null) {
-                errorMsg.append(line);
+                rawErrorMsg.append(line);
             }
-            throw new ResponseException(statusCode, errorMsg.toString());
+            String message = new Gson().fromJson(rawErrorMsg.toString(), ErrorResult.class).message();
+            throw new ResponseException(statusCode, message);
         }
     }
 
