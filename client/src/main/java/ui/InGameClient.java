@@ -1,4 +1,8 @@
 package ui;
 
-public class InGameClient {
+public class InGameClient implements Client {
+    @Override
+    public void printHelp() {
+
+    }
 }
