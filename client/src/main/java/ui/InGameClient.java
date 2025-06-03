@@ -6,6 +6,7 @@ public class InGameClient implements Client {
     @Override
     public ClientSwitchRequest processInput(String input, ServerFacade facade) {
 
+        return null;
     }
 
     @Override
