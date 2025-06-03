@@ -10,6 +10,7 @@ public class InputLoop {
     GameState state = LOGGED_OUT;
     String prefix = state.toString();
     ServerFacade facade;
+    Client currentClient = new LoggedOutClient();
 
     public InputLoop(ServerFacade facade) {
         this.facade = facade;
@@ -24,7 +25,32 @@ public class InputLoop {
             System.out.printf("%s > " + EscapeSequences.SET_TEXT_BLINKING, prefix);
             userInput = inputScanner.nextLine();
             System.out.print(EscapeSequences.RESET_TEXT_BLINKING);
-            state.getClient().processInput(userInput, facade);
+            var switchRequest = state.getClient().processInput(userInput, facade);
+            if(switchRequest != null) {
+                switch(state) {
+                    case LOGGED_IN -> {
+                        if(switchRequest.authToken() == null) {
+                            state = LOGGED_OUT;
+                            currentClient = new LoggedOutClient();
+
+                        } else {
+                            assert (switchRequest.gameId() != null);
+                            state = IN_GAME;
+                            currentClient = new InGameClient(switchRequest.authToken(), switchRequest.gameId(), switchRequest.playerColor());
+                        }
+                    }
+                    case LOGGED_OUT -> {
+                        assert (switchRequest.authToken() != null);
+                        state = LOGGED_IN;
+                        currentClient = new LoggedInClient(switchRequest.authToken());
+                    }
+                    case IN_GAME -> {
+                        assert(switchRequest.gameId() == null);
+                        state = LOGGED_IN;
+                        currentClient = new LoggedInClient(switchRequest.authToken());
+                    }
+                }
+            }
         }
     }
 
