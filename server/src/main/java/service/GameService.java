@@ -14,7 +14,7 @@ public class GameService extends Service {
 
     public static ListGamesResult listGames(ListGamesRequest req, boolean useMemoryDao) throws UnauthorizedException, DataAccessException {
         if(Service.isNotAuthorized(req.authToken(), useMemoryDao)) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Unauthorized; please log in first.");
         }
         GameDAO games;
         if(useMemoryDao) {
@@ -32,7 +32,7 @@ public class GameService extends Service {
             throw new BadRequestException();
         }
         if(Service.isNotAuthorized(req.authToken(), useMemoryDao)) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Unauthorized; please log in first.");
         }
         GameDAO games;
         if(useMemoryDao) {
@@ -62,14 +62,14 @@ public class GameService extends Service {
         }
         var authData = auths.getAuth(req.authToken());
         if(authData == null) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Unauthorized; please log in first.");
         }
         var gameData = games.getGame(req.gameID());
         if(gameData == null) {
-            throw new NotFoundException();
+            throw new NotFoundException("No game found with that ID.");
         }
         if(gameData.isTaken(req.playerColor())) {
-            throw new AlreadyTakenException();
+            throw new AlreadyTakenException("That color is already taken.");
         } else {
             GameData newGameData = getNewGameData(req, gameData, authData);
             try {

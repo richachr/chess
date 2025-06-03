@@ -31,7 +31,7 @@ public class UserService extends Service {
         }
         UserData existingUserData = users.getUser(req.username());
         if(existingUserData != null) {
-            throw new AlreadyTakenException();
+            throw new AlreadyTakenException("Username already taken.");
         }
         users.createUser(new UserData(req.username(), BCrypt.hashpw(req.password(),BCrypt.gensalt()), req.email()));
         String authToken = UUID.randomUUID().toString();
@@ -56,10 +56,10 @@ public class UserService extends Service {
         }
         var userData = users.getUser(req.username());
         if(userData == null) {
-            throw new NotFoundException("user not found");
+            throw new NotFoundException("User not found.");
         }
         if(!BCrypt.checkpw(req.password(),userData.password())) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Incorrect password.");
         }
         String authToken = UUID.randomUUID().toString();
         auths.createAuth(new AuthData(req.username(), authToken));
@@ -79,11 +79,11 @@ public class UserService extends Service {
         }
         var authData = auths.getAuth(req.authToken());
         if(authData == null) {
-            throw new NotFoundException();
+            throw new NotFoundException("No logged in user found with your information.");
         }
         auths.deleteAuth(authData);
         if(auths.getAuth(req.authToken()) != null) {
-            throw new InternalErrorException("deletion failed");
+            throw new InternalErrorException("Deletion failed.");
         }
     }
 }
