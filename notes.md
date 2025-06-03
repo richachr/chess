@@ -315,3 +315,21 @@
 - You can edit the run config to allow multiple instances.
 - REPL: Read, evaluate, print loop
 - One REPL, three clients for Chess.
+- Understand Spark filters that can run in order before or after any handler called, or restricted to certain paths.
+- Java has a built-in logging framework, java.util.logging.
+- Adding a frontend for logging, such as SLF4J, allows users to change the backend for logging easily.
+- Platform loggers implement System.logger and can be obtained with System.getLogger(name).
+- You can log with logger.log(level, message, opt. throwable). Using a lambda for the message allows the message to be computer at log time.
+- You can configure the j.u.l logging backend with a logging.properties file.
+- When formatting logging, string placeholders are {0}, {1}, and so on. Braces must be escaped with single quotes: '{', '}'. Use two single quotes '' to include a literal single quote in the message.
+- Properties in the logging configuration are not system properties. You cannot set them with the -D command-line option. Instead, place the logging properties into a file that you specify with -Djava.util.logging.config.file=configFile.
+- j.u.l is based on handlers, with default being ConsoleHandler. FileHandlers are available. To enable, in the properties file set handlers=java.util.logging.ConsoleHandler,java.util.logging.FileHandler
+- In the config, you can set append, file name (pattern), number of logs in rotation (count), and encoding.
+- In logging config, patterns are %h for home directory,  %t for temp directory, %u for unique number, %g for gen number of rotating files, %% for percent.
+- You can set the logger level with Logger.setLevel(level), and replace Logger with Handler to change settings for handlers.
+- Each handler has a formatter, like SimpleFormatter or XMLFormatter.
+- Create loggers as static. static {} code blocks allow things to be run only once per run of the JVM.
+- Log formatting (from Formatter class): %1$ is date/time of message, %2$ is the method that called, %3$ is the logger name, %4$ is the level of the message, %5$ is the message, and %6$ is the Throwable.
+- You can call the level as a method on the logger to log at that level e.g. logger.severe(message), but you can't include throwables.
+- You can log when you enter/exit a method using logger.entering/exiting(className, methodName).
+- Loggers should be named after their class for relevance in printing log messages.
