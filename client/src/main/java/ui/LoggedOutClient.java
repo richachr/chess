@@ -1,6 +1,7 @@
 package ui;
 
 import request.LoginRequest;
+import request.RegisterRequest;
 import server.ResponseException;
 import server.ServerFacade;
 
@@ -42,14 +43,26 @@ public class LoggedOutClient implements Client {
             } catch (NoSuchElementException e) {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
             } catch (ResponseException e) {
-                printError(e.getMessage());
+                printError(e.getMessage().replaceAll("Error: ", ""));
             }
         }
         return null;
     }
 
     public ClientSwitchRequest register(String input, ServerFacade facade) {
-
+        try(Scanner inputScanner = new Scanner(input)) {
+            inputScanner.next();
+            RegisterRequest req;
+            try {
+                req = new RegisterRequest(inputScanner.next(), inputScanner.next(), inputScanner.next());
+                var res = facade.register(req);
+                return new ClientSwitchRequest(res.authToken(), null, null);
+            } catch (NoSuchElementException e) {
+                printError("Incorrect parameters; type \"help\" to list valid syntax.");
+            } catch (ResponseException e) {
+                printError(e.getMessage().replaceAll("Error: ", ""));
+            }
+        }
         return null;
     }
 }
