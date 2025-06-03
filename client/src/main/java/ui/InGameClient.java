@@ -1,8 +1,10 @@
 package ui;
 
+import server.ServerFacade;
+
 public class InGameClient implements Client {
     @Override
-    public void processInput(String input) {
+    public ClientSwitchRequest processInput(String input, ServerFacade facade) {
 
     }
 
