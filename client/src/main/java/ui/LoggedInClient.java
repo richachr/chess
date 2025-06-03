@@ -5,7 +5,7 @@ import server.ServerFacade;
 public class LoggedInClient implements Client {
     @Override
     public ClientSwitchRequest processInput(String input, ServerFacade facade) {
-
+        return null;
     }
 
     @Override
