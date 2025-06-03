@@ -1,22 +1,25 @@
 package ui;
 
+import request.LoginRequest;
+import server.ResponseException;
 import server.ServerFacade;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class LoggedOutClient implements Client {
     @Override
-    public void processInput(String input) {
+    public ClientSwitchRequest processInput(String input, ServerFacade facade) {
         try(Scanner inputScanner = new Scanner(input)) {
             switch(inputScanner.next().toLowerCase().strip()) {
                 case "help" -> printHelp();
                 case "quit" -> {}
-                case "login" -> login(input);
-                case "register" -> register(input);
+                case "login" -> {return login(input, facade);}
+                case "register" -> {return register(input, facade);}
                 default -> printError("Unexpected command; type \"help\" to list valid commands.");
             }
         }
-
+        return null;
     }
 
     @Override
@@ -28,17 +31,25 @@ public class LoggedOutClient implements Client {
         System.out.println(EscapeSequences.RESET_TEXT_ITALIC);
     }
 
-    public void login(String input) {
+    public ClientSwitchRequest login(String input, ServerFacade facade) {
         try(Scanner inputScanner = new Scanner(input)) {
             inputScanner.next();
+            LoginRequest req;
             try {
-                new ServerFacade()
+                req = new LoginRequest(inputScanner.next(), inputScanner.next());
+                var res = facade.login(req);
+                return new ClientSwitchRequest(res.authToken(), null, null);
+            } catch (NoSuchElementException e) {
+                printError("Incorrect parameters; type \"help\" to list valid syntax.");
+            } catch (ResponseException e) {
+                printError(e.getMessage());
             }
         }
-
+        return null;
     }
 
-    public void register(String input) {
+    public ClientSwitchRequest register(String input, ServerFacade facade) {
 
+        return null;
     }
 }
