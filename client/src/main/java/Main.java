@@ -1,4 +1,5 @@
 import chess.*;
+import server.ServerFacade;
 import ui.InputLoop;
 
 public class Main {
@@ -7,9 +8,10 @@ public class Main {
         if(args.length > 0) {
             url = args[0];
         }
+        var facade = new ServerFacade(url);
 
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ 240 Chess Client: type \"help\" for a list of commands. ♕");
-        new InputLoop().run();
+        System.out.println("\n♕ 240 Chess Client: type \"help\" for a list of commands. ♕\n");
+        new InputLoop(facade).run();
     }
 }
