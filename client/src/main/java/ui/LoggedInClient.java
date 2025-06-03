@@ -2,6 +2,11 @@ package ui;
 
 public class LoggedInClient implements Client {
     @Override
+    public void processInput(String input) {
+
+    }
+
+    @Override
     public void printHelp() {
         System.out.println(EscapeSequences.EMPTY + "help -> " + EscapeSequences.SET_TEXT_ITALIC + "display help text.");
         System.out.println(EscapeSequences.EMPTY + "logout -> " + EscapeSequences.SET_TEXT_ITALIC + "log out of current session.");
