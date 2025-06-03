@@ -25,29 +25,29 @@ public class InputLoop {
             System.out.printf("%s > " + EscapeSequences.SET_TEXT_BLINKING, prefix);
             userInput = inputScanner.nextLine();
             System.out.print(EscapeSequences.RESET_TEXT_BLINKING);
-            var switchRequest = state.getClient().processInput(userInput, facade);
+            var switchRequest = currentClient.processInput(userInput, facade);
             if(switchRequest != null) {
                 switch(state) {
                     case LOGGED_IN -> {
                         if(switchRequest.authToken() == null) {
                             state = LOGGED_OUT;
                             currentClient = new LoggedOutClient();
-
                         } else {
                             assert (switchRequest.gameId() != null);
                             state = IN_GAME;
-                            currentClient = new InGameClient(switchRequest.authToken(), switchRequest.gameId(), switchRequest.playerColor());
+                            currentClient = new InGameClient(switchRequest.authToken(), switchRequest.username(), switchRequest.gameId(), switchRequest.playerColor());
                         }
                     }
                     case LOGGED_OUT -> {
                         assert (switchRequest.authToken() != null);
                         state = LOGGED_IN;
-                        currentClient = new LoggedInClient(switchRequest.authToken());
+                        prefix = switchRequest.username();
+                        currentClient = new LoggedInClient(switchRequest.authToken(), switchRequest.username());
                     }
                     case IN_GAME -> {
                         assert(switchRequest.gameId() == null);
                         state = LOGGED_IN;
-                        currentClient = new LoggedInClient(switchRequest.authToken());
+                        currentClient = new LoggedInClient(switchRequest.authToken(), switchRequest.username());
                     }
                 }
             }
