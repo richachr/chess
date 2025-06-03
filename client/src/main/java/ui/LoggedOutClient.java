@@ -39,7 +39,7 @@ public class LoggedOutClient implements Client {
             try {
                 req = new LoginRequest(inputScanner.next(), inputScanner.next());
                 var res = facade.login(req);
-                return new ClientSwitchRequest(res.authToken(), null, null);
+                return new ClientSwitchRequest(res.authToken(), res.username(),null, null);
             } catch (NoSuchElementException e) {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
             } catch (ResponseException e) {
@@ -56,7 +56,7 @@ public class LoggedOutClient implements Client {
             try {
                 req = new RegisterRequest(inputScanner.next(), inputScanner.next(), inputScanner.next());
                 var res = facade.register(req);
-                return new ClientSwitchRequest(res.authToken(), null, null);
+                return new ClientSwitchRequest(res.authToken(), res.username(), null, null);
             } catch (NoSuchElementException e) {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
             } catch (ResponseException e) {
