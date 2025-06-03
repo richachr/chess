@@ -8,8 +8,8 @@ public class Main {
             url = args[0];
         }
 
-        new InputLoop().run();
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ 240 Chess Client: " + piece);
+        System.out.println("♕ 240 Chess Client: type \"help\" for a list of commands. ♕");
+        new InputLoop().run();
     }
 }
