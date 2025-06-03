@@ -3,6 +3,14 @@ package ui;
 import server.ServerFacade;
 
 public class LoggedInClient implements Client {
+    private String authToken;
+    private String username;
+
+    public LoggedInClient(String authToken, String username) {
+        this.authToken = authToken;
+        this.username = username;
+    }
+
     @Override
     public ClientSwitchRequest processInput(String input, ServerFacade facade) {
         return null;
