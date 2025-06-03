@@ -10,7 +10,6 @@ public class Main {
         }
         var facade = new ServerFacade(url);
 
-        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("\n♕ 240 Chess Client: type \"help\" for a list of commands. ♕\n");
         new InputLoop(facade).run();
     }
