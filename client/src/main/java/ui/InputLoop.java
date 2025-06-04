@@ -21,11 +21,16 @@ public class InputLoop {
         String userInput = "";
         Scanner inputScanner = new Scanner(System.in);
         inputScanner.useDelimiter("\n");
+        ClientSwitchRequest switchRequest = null;
         while (!userInput.equalsIgnoreCase("quit")) {
             System.out.printf("%s > " + EscapeSequences.SET_TEXT_BLINKING, prefix);
             userInput = inputScanner.nextLine();
             System.out.print(EscapeSequences.RESET_TEXT_BLINKING);
-            var switchRequest = currentClient.processInput(userInput, facade);
+            try {
+                switchRequest = currentClient.processInput(userInput, facade);
+            } catch (Exception e) {
+                System.err.println("An error has occurred.");
+            }
             if(switchRequest != null) {
                 switch(state) {
                     case LOGGED_IN -> {
