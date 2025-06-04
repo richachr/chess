@@ -38,11 +38,12 @@ public class ServerFacade {
         this.sendRequest("/game", "PUT", req, null);
     }
 
-    public <T> T sendRequest(String path, String method, Object request, Class<T> responseClass) throws ResponseException {
+    public <T> T sendRequest(String path, String method, Request request, Class<T> responseClass) throws ResponseException {
         try {
             HttpURLConnection connection = getConnection(path);
             connection.setRequestMethod(method);
             connection.setDoOutput(true);
+            connection.addRequestProperty("Authorization", request.getAuthToken());
             setReqBody(connection, request);
             connection.connect();
             if(connection.getResponseCode() != 200) {
