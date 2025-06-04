@@ -26,7 +26,6 @@ public class LoginHandler extends Handler implements Route {
         } catch (Exception e) {
             Server.handleException(e);
         }
-        System.out.println(jsonResponse);
         return jsonResponse;
     }
 }
