@@ -13,8 +13,8 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class LoggedInClient implements Client {
-    private String authToken;
-    private String username;
+    private final String authToken;
+    private final String username;
     private GameData[] games;
 
     public LoggedInClient(String authToken, String username) {
@@ -32,7 +32,7 @@ public class LoggedInClient implements Client {
                 case "create" -> create(input, facade);
                 case "list" -> list(facade);
                 case "join" -> {return join(input, facade);}
-                // case "observe" -> {return observe(input, facade);}
+                case "observe" -> {return observe(input, facade);}
                 default -> printError("Unexpected command; type \"help\" to list valid commands.");
             }
         }
@@ -120,6 +120,26 @@ public class LoggedInClient implements Client {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
             } catch (ResponseException e) {
                 printError(e.getMessage().replaceAll("Error: ", ""));
+            } catch (ArrayIndexOutOfBoundsException e) {
+                printError("Incorrect game number. Check game number using `list`.");
+            }
+        }
+        return null;
+    }
+
+    public ClientSwitchRequest observe(String input, ServerFacade facade) {
+        try(Scanner inputScanner = new Scanner(input)) {
+            inputScanner.next();
+            try {
+                int gameId = inputScanner.nextInt();
+                if(games == null) {
+                    System.out.println("Observing game based on these IDs: ");
+                    list(facade);
+                }
+                gameId = games[gameId - 1].gameID();
+                return new ClientSwitchRequest(authToken, username, gameId, null);
+            } catch (NoSuchElementException e) {
+                printError("Incorrect parameters; type \"help\" to list valid syntax.");
             } catch (ArrayIndexOutOfBoundsException e) {
                 printError("Incorrect game number. Check game number using `list`.");
             }
