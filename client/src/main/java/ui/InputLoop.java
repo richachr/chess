@@ -46,11 +46,11 @@ public class InputLoop {
                     currentClient = new LoggedOutClient();
                 } else {
                     assert (switchRequest.gameId() != null);
-                    state = IN_GAME;
-                    currentClient = new InGameClient(switchRequest.authToken(),
-                                                     switchRequest.username(),
-                                                     switchRequest.gameId(),
-                                                     switchRequest.playerColor());
+                    // Create ingameclient with all fields, change state
+                    new InGameClient(switchRequest.authToken(),
+                            switchRequest.username(),
+                            switchRequest.gameId(),
+                            switchRequest.playerColor()).processInput("redraw", facade);
                 }
             }
             case LOGGED_OUT -> {
