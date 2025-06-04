@@ -32,30 +32,37 @@ public class InputLoop {
                 System.err.println("An error has occurred.");
             }
             if(switchRequest != null) {
-                switch(state) {
-                    case LOGGED_IN -> {
-                        if(switchRequest.authToken() == null) {
-                            state = LOGGED_OUT;
-                            prefix = state.toString();
-                            currentClient = new LoggedOutClient();
-                        } else {
-                            assert (switchRequest.gameId() != null);
-                            state = IN_GAME;
-                            currentClient = new InGameClient(switchRequest.authToken(), switchRequest.username(), switchRequest.gameId(), switchRequest.playerColor());
-                        }
-                    }
-                    case LOGGED_OUT -> {
-                        assert (switchRequest.authToken() != null);
-                        state = LOGGED_IN;
-                        prefix = switchRequest.username();
-                        currentClient = new LoggedInClient(switchRequest.authToken(), switchRequest.username());
-                    }
-                    case IN_GAME -> {
-                        assert(switchRequest.gameId() == null);
-                        state = LOGGED_IN;
-                        currentClient = new LoggedInClient(switchRequest.authToken(), switchRequest.username());
-                    }
+                switchState(switchRequest);
+            }
+        }
+    }
+
+    private void switchState(ClientSwitchRequest switchRequest) {
+        switch(state) {
+            case LOGGED_IN -> {
+                if(switchRequest.authToken() == null) {
+                    state = LOGGED_OUT;
+                    prefix = state.toString();
+                    currentClient = new LoggedOutClient();
+                } else {
+                    assert (switchRequest.gameId() != null);
+                    state = IN_GAME;
+                    currentClient = new InGameClient(switchRequest.authToken(),
+                                                     switchRequest.username(),
+                                                     switchRequest.gameId(),
+                                                     switchRequest.playerColor());
                 }
+            }
+            case LOGGED_OUT -> {
+                assert (switchRequest.authToken() != null);
+                state = LOGGED_IN;
+                prefix = switchRequest.username();
+                currentClient = new LoggedInClient(switchRequest.authToken(), switchRequest.username());
+            }
+            case IN_GAME -> {
+                assert(switchRequest.gameId() == null);
+                state = LOGGED_IN;
+                currentClient = new LoggedInClient(switchRequest.authToken(), switchRequest.username());
             }
         }
     }
