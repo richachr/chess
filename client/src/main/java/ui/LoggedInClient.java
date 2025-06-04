@@ -75,6 +75,7 @@ public class LoggedInClient implements Client {
                 req = new CreateGameRequest(inputScanner.next(), authToken);
                 facade.createGame(req);
                 System.out.printf("Created new game: %s\n", req.gameName());
+                list(facade);
             } catch (NoSuchElementException e) {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
             } catch (ResponseException e) {
