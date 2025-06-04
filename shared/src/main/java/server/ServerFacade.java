@@ -38,7 +38,7 @@ public class ServerFacade {
         this.sendRequest("/game", "PUT", req, null);
     }
 
-    private <T> T sendRequest(String path, String method, Request request, Class<T> responseClass) throws ResponseException {
+    public <T> T sendRequest(String path, String method, Request request, Class<T> responseClass) throws ResponseException {
         try {
             HttpURLConnection connection = getConnection(path);
             connection.setRequestMethod(method);
