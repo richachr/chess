@@ -38,6 +38,7 @@ public class LoggedOutClient implements Client {
             try {
                 req = new LoginRequest(inputScanner.next(), inputScanner.next());
                 var res = facade.login(req);
+                System.out.printf("Logged in as %s%n", req.username());
                 return new ClientSwitchRequest(res.authToken(), res.username(),null, null);
             } catch (NoSuchElementException e) {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
@@ -55,6 +56,7 @@ public class LoggedOutClient implements Client {
             try {
                 req = new RegisterRequest(inputScanner.next(), inputScanner.next(), inputScanner.next());
                 var res = facade.register(req);
+                System.out.printf("Registered user %s%n", req.username());
                 return new ClientSwitchRequest(res.authToken(), res.username(), null, null);
             } catch (NoSuchElementException e) {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
