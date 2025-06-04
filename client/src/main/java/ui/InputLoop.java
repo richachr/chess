@@ -31,6 +31,7 @@ public class InputLoop {
                     case LOGGED_IN -> {
                         if(switchRequest.authToken() == null) {
                             state = LOGGED_OUT;
+                            prefix = state.toString();
                             currentClient = new LoggedOutClient();
                         } else {
                             assert (switchRequest.gameId() != null);
