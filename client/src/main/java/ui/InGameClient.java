@@ -85,54 +85,48 @@ public class InGameClient implements Client {
     private void drawBoardBody(boolean reversed, ChessBoard board) {
         if(reversed) {
             for(int row = 1; row <= 8; row++) {
-                boolean whiteBackground = (row % 2 == 1);
-                System.out.print(EscapeSequences.EMPTY + EscapeSequences.SET_BG_COLOR_BLACK);
-                System.out.printf(" %d ", row);
-                for(int col = 8; col >= 1; col--) {
-                    if(whiteBackground) {
-                        System.out.print(EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.SET_TEXT_COLOR_BLACK);
-                        whiteBackground = false;
-                    } else {
-                        System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE);
-                        whiteBackground = true;
-                    }
-                    String pieceStr;
-                    try {
-                        pieceStr = board.getPiece(new ChessPosition(row, col)).toString();
-                    } catch (NullPointerException e) {
-                        pieceStr = " ";
-                    }
-                    System.out.printf(" %s ", pieceStr);
-                }
-                System.out.print(EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_WHITE);
-                System.out.printf(" %d ", row);
-                System.out.println(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                drawRow(row, true, board);
             }
         } else {
             for(int row = 8; row > 0; row--) {
-                boolean whiteBackground = (row % 2 == 0);
-                System.out.print(EscapeSequences.EMPTY + EscapeSequences.SET_BG_COLOR_BLACK);
-                System.out.printf(" %d ", row);
-                for(int col = 1; col <= 8; col++) {
-                    if(whiteBackground) {
-                        System.out.print(EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.SET_TEXT_COLOR_BLACK);
-                        whiteBackground = false;
-                    } else {
-                        System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE);
-                        whiteBackground = true;
-                    }
-                    String pieceStr;
-                    try {
-                        pieceStr = board.getPiece(new ChessPosition(row, col)).toString();
-                    } catch (NullPointerException e) {
-                        pieceStr = " ";
-                    }
-                    System.out.printf(" %s ", pieceStr);
-                }
-                System.out.print(EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_WHITE);
-                System.out.printf(" %d ", row);
-                System.out.println(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                drawRow(row, false, board);
             }
         }
+    }
+
+    private void drawPiece(int row, int col, boolean whiteBackground, ChessBoard board) {
+        if(whiteBackground) {
+            System.out.print(EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.SET_TEXT_COLOR_BLACK);
+            whiteBackground = false;
+        } else {
+            System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE);
+            whiteBackground = true;
+        }
+        String pieceStr;
+        try {
+            pieceStr = board.getPiece(new ChessPosition(row, col)).toString();
+        } catch (NullPointerException e) {
+            pieceStr = " ";
+        }
+        System.out.printf(" %s ", pieceStr);
+    }
+
+    private void drawRow(int row, boolean reversed, ChessBoard board) {
+        System.out.print(EscapeSequences.EMPTY + EscapeSequences.SET_BG_COLOR_BLACK);
+        System.out.printf(" %d ", row);
+        if(reversed) {
+            boolean whiteBackground = (row % 2 == 1);
+            for(int col = 8; col >= 1; col--) {
+                drawPiece(row, col, whiteBackground, board);
+            }
+        } else {
+            boolean whiteBackground = (row % 2 == 0);
+            for(int col = 1; col <= 8; col++) {
+                drawPiece(row, col, whiteBackground, board);
+            }
+        }
+        System.out.print(EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_WHITE);
+        System.out.printf(" %d ", row);
+        System.out.println(EscapeSequences.SET_BG_COLOR_DARK_GREY);
     }
 }
