@@ -3,6 +3,8 @@ package ui;
 import chess.ChessGame;
 import server.ServerFacade;
 
+import java.util.Scanner;
+
 public class InGameClient implements Client {
     private String authToken;
     private String username;
@@ -18,13 +20,26 @@ public class InGameClient implements Client {
 
     @Override
     public ClientSwitchRequest processInput(String input, ServerFacade facade) {
-
-        return null;
+//        try(Scanner inputScanner = new Scanner(input)) {
+//            switch(inputScanner.next().toLowerCase().strip()) {
+//                case "help" -> printHelp();
+//                case "quit" -> {}
+//                default -> printError("Unexpected command; type \"help\" to list valid commands.");
+//            }
+//        }
+        drawBoard(color);
+        return new ClientSwitchRequest(authToken, username, null, null);
     }
 
     @Override
     public void printHelp() {
 
+    }
+
+    public void drawBoard(ChessGame.TeamColor color) {
+        if(color == null) {
+            drawBoard(ChessGame.TeamColor.WHITE);
+        }
     }
 
 }
