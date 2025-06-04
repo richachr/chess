@@ -3,9 +3,9 @@ package client;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import request.*;
-import server.ResponseException;
+import facade.ResponseException;
 import server.Server;
-import server.ServerFacade;
+import facade.ServerFacade;
 
 
 public class ServerFacadeTests {

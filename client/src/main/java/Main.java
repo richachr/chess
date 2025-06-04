@@ -1,4 +1,4 @@
-import server.ServerFacade;
+import facade.ServerFacade;
 import ui.InputLoop;
 
 public class Main {

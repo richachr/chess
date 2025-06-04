@@ -6,8 +6,8 @@ import request.CreateGameRequest;
 import request.JoinGameRequest;
 import request.ListGamesRequest;
 import request.LogoutRequest;
-import server.ResponseException;
-import server.ServerFacade;
+import facade.ResponseException;
+import facade.ServerFacade;
 
 import java.util.NoSuchElementException;
 import java.util.Scanner;

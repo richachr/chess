@@ -1,6 +1,6 @@
 package ui;
 
-import server.ServerFacade;
+import facade.ServerFacade;
 
 public interface Client {
     void printHelp();
