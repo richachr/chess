@@ -29,7 +29,7 @@ public class GameService extends Service {
             throws BadRequestException, UnauthorizedException, DataAccessException {
         if(req.gameName() == null ||
            req.authToken() == null) {
-            throw new BadRequestException();
+            throw new BadRequestException("Bad request: incomplete data.");
         }
         if(Service.isNotAuthorized(req.authToken(), useMemoryDao)) {
             throw new UnauthorizedException("Unauthorized; please log in first.");
@@ -48,8 +48,11 @@ public class GameService extends Service {
             throws BadRequestException, UnauthorizedException, NotFoundException, AlreadyTakenException, DataAccessException {
         if(req.gameID() == null ||
            req.authToken() == null ||
-           req.playerColor() == null || (!req.playerColor().equalsIgnoreCase("WHITE") && !req.playerColor().equalsIgnoreCase("BLACK"))) {
-            throw new BadRequestException();
+           req.playerColor() == null) {
+            throw new BadRequestException("Bad request: incomplete data.");
+        }
+        if(!req.playerColor().equalsIgnoreCase("WHITE") && !req.playerColor().equalsIgnoreCase("BLACK")) {
+            throw new BadRequestException("Bad request: invalid team color.");
         }
         GameDAO games;
         AuthDAO auths;
