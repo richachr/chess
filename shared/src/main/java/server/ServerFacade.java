@@ -42,11 +42,11 @@ public class ServerFacade {
         try {
             HttpURLConnection connection = getConnection(path);
             connection.setRequestMethod(method);
+            connection.addRequestProperty("Authorization", request.getAuthToken());
             if(!method.equalsIgnoreCase("get")) {
                 connection.setDoOutput(true);
                 setReqBody(connection, request);
             }
-            connection.addRequestProperty("Authorization", request.getAuthToken());
             connection.connect();
             if(connection.getResponseCode() != 200) {
                 handleErrors(connection);
