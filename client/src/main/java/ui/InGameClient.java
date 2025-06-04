@@ -94,7 +94,7 @@ public class InGameClient implements Client {
         }
     }
 
-    private void drawPiece(int row, int col, boolean whiteBackground, ChessBoard board) {
+    private boolean drawPiece(int row, int col, boolean whiteBackground, ChessBoard board) {
         if(whiteBackground) {
             System.out.print(EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.SET_TEXT_COLOR_BLACK);
             whiteBackground = false;
@@ -109,6 +109,7 @@ public class InGameClient implements Client {
             pieceStr = " ";
         }
         System.out.printf(" %s ", pieceStr);
+        return whiteBackground;
     }
 
     private void drawRow(int row, boolean reversed, ChessBoard board) {
@@ -117,12 +118,12 @@ public class InGameClient implements Client {
         if(reversed) {
             boolean whiteBackground = (row % 2 == 1);
             for(int col = 8; col >= 1; col--) {
-                drawPiece(row, col, whiteBackground, board);
+                whiteBackground = drawPiece(row, col, whiteBackground, board);
             }
         } else {
             boolean whiteBackground = (row % 2 == 0);
             for(int col = 1; col <= 8; col++) {
-                drawPiece(row, col, whiteBackground, board);
+                whiteBackground = drawPiece(row, col, whiteBackground, board);
             }
         }
         System.out.print(EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_WHITE);
