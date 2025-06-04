@@ -20,13 +20,6 @@ public class InGameClient implements Client {
 
     @Override
     public ClientSwitchRequest processInput(String input, ServerFacade facade) {
-//        try(Scanner inputScanner = new Scanner(input)) {
-//            switch(inputScanner.next().toLowerCase().strip()) {
-//                case "help" -> printHelp();
-//                case "quit" -> {}
-//                default -> printError("Unexpected command; type \"help\" to list valid commands.");
-//            }
-//        }
         drawBoard(color);
         return new ClientSwitchRequest(authToken, username, null, null);
     }
