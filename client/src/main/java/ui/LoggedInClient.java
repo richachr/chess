@@ -25,10 +25,10 @@ public class LoggedInClient implements Client {
         try(Scanner inputScanner = new Scanner(input)) {
             switch(inputScanner.next().toLowerCase().strip()) {
                 case "help" -> printHelp();
-                case "quit" -> {logout(facade);}
+                case "quit" -> logout(facade);
                 case "logout" -> {return logout(facade);}
-                case "create" -> {create(input, facade);}
-                case "list" -> {list(facade);}
+                case "create" -> create(input, facade);
+                case "list" -> list(facade);
                 // case "join" -> {return join(input, facade);}
                 // case "observe" -> {return observe(input, facade);}
                 default -> printError("Unexpected command; type \"help\" to list valid commands.");
@@ -81,11 +81,23 @@ public class LoggedInClient implements Client {
             var res = facade.listGames(req);
             games = res.games();
             for(int i = 1; i <= games.length; i++) {
-                System.out.printf("%d: ", i);
-                System.out.println(games[i - 1].toString());
+                var game = games[i - 1];
+                System.out.printf("%d (%s): ", i, game.gameName());
+                if(game.whiteUsername() != null) {
+                    System.out.printf("White is being played by %s, ", game.whiteUsername());
+                } else {
+                    System.out.print("White is available to play, ");
+                }
+                if(game.blackUsername() != null) {
+                    System.out.printf("black is being played by %s.\n", game.blackUsername());
+                } else {
+                    System.out.print("black is available to play.\n");
+                }
             }
         }  catch (ResponseException e) {
             printError(e.getMessage().replaceAll("Error: ", ""));
         }
     }
+
+
 }
