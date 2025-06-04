@@ -1,7 +1,9 @@
 package ui;
 
+import chess.ChessGame;
 import model.GameData;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.ListGamesRequest;
 import request.LogoutRequest;
 import server.ResponseException;
@@ -29,7 +31,7 @@ public class LoggedInClient implements Client {
                 case "logout" -> {return logout(facade);}
                 case "create" -> create(input, facade);
                 case "list" -> list(facade);
-                // case "join" -> {return join(input, facade);}
+                case "join" -> {return join(input, facade);}
                 // case "observe" -> {return observe(input, facade);}
                 default -> printError("Unexpected command; type \"help\" to list valid commands.");
             }
@@ -99,5 +101,29 @@ public class LoggedInClient implements Client {
         }
     }
 
-
+    public ClientSwitchRequest join(String input, ServerFacade facade) {
+        try(Scanner inputScanner = new Scanner(input)) {
+            inputScanner.next();
+            JoinGameRequest req;
+            try {
+                int gameId = inputScanner.nextInt();
+                if(games == null) {
+                    System.out.println("Joining game based on these IDs: ");
+                    list(facade);
+                }
+                gameId = games[gameId - 1].gameID();
+                req = new JoinGameRequest(gameId, inputScanner.next(), authToken);
+                facade.joinGame(req);
+                System.out.printf("Joined game as %s\n", req.playerColor());
+                return new ClientSwitchRequest(authToken, username, gameId, ChessGame.TeamColor.valueOf(req.playerColor().toUpperCase()));
+            } catch (NoSuchElementException e) {
+                printError("Incorrect parameters; type \"help\" to list valid syntax.");
+            } catch (ResponseException e) {
+                printError(e.getMessage().replaceAll("Error: ", ""));
+            } catch (ArrayIndexOutOfBoundsException e) {
+                printError("Incorrect game number. Check game number using `list`.");
+            }
+        }
+        return null;
+    }
 }
