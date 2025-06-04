@@ -1,6 +1,6 @@
 package server.handler;
 
-import com.google.gson.GsonBuilder;
+import com.google.gson.Gson;
 import request.ListGamesRequest;
 import server.Server;
 import service.GameService;
@@ -15,7 +15,7 @@ public class ListGamesHandler extends Handler implements Route {
 
     public Object handle(Request req, Response res) {
         res.type("application/json");
-        var gsonBuilder = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().serializeNulls().create();
+        var gsonBuilder = new Gson();
         ListGamesRequest listReq = new ListGamesRequest(req.headers("authorization"));
         String jsonResponse = "";
         try {
