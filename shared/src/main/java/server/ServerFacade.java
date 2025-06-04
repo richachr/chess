@@ -8,7 +8,7 @@ import java.io.*;
 import java.net.*;
 
 public class ServerFacade {
-    public String url;
+    private final String url;
 
     public ServerFacade(String url) {
         this.url = url;
@@ -38,7 +38,7 @@ public class ServerFacade {
         this.sendRequest("/game", "PUT", req, null);
     }
 
-    public <T> T sendRequest(String path, String method, Request request, Class<T> responseClass) throws ResponseException {
+    private <T> T sendRequest(String path, String method, Request request, Class<T> responseClass) throws ResponseException {
         try {
             HttpURLConnection connection = getConnection(path);
             connection.setRequestMethod(method);
@@ -59,7 +59,7 @@ public class ServerFacade {
         }
     }
 
-    public HttpURLConnection getConnection(String path) throws IOException {
+    private HttpURLConnection getConnection(String path) throws IOException {
         try {
             var requestUrl = new URI(this.url + path).toURL();
             return (HttpURLConnection) requestUrl.openConnection();
@@ -68,7 +68,7 @@ public class ServerFacade {
         }
     }
 
-    public void setReqBody(HttpURLConnection connection, Object request) throws IOException {
+    private void setReqBody(HttpURLConnection connection, Object request) throws IOException {
         if(request != null) {
             connection.addRequestProperty("Content-Type", "application/json");
             String requestText = new Gson().toJson(request);
@@ -78,7 +78,7 @@ public class ServerFacade {
         }
     }
 
-    public <T> T getResBody(HttpURLConnection connection, Class<T> responseClass) throws IOException {
+    private <T> T getResBody(HttpURLConnection connection, Class<T> responseClass) throws IOException {
         T response = null;
         if(responseClass != null && connection.getContentLength() != 0) {
             try(InputStream resBody = connection.getInputStream(); InputStreamReader reader = new InputStreamReader(resBody)) {
@@ -88,7 +88,7 @@ public class ServerFacade {
         return response;
     }
 
-    public void handleErrors(HttpURLConnection connection) throws IOException, ResponseException {
+    private void handleErrors(HttpURLConnection connection) throws IOException, ResponseException {
         int statusCode = connection.getResponseCode();
         try(InputStream in = connection.getErrorStream();
             InputStreamReader inputReader = new InputStreamReader(in);
