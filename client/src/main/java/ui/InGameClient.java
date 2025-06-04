@@ -42,7 +42,7 @@ public class InGameClient implements Client {
             var games = facade.listGames(new ListGamesRequest(authToken)).games();
             ChessBoard board = null;
             for (var gameData : games) {
-                if (gameData.gameID() == gameId) {
+                if (gameData.gameID().equals(gameId)) {
                     board = gameData.game().getBoard();
                 }
             }
