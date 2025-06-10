@@ -8,6 +8,7 @@ import facade.ResponseException;
 import facade.ServerFacade;
 
 import java.lang.module.FindException;
+import java.util.Scanner;
 
 public class InGameClient implements Client {
     private final String authToken;
@@ -24,8 +25,18 @@ public class InGameClient implements Client {
 
     @Override
     public ClientSwitchRequest processInput(String input, ServerFacade facade) {
-        drawBoard(color, facade);
-        return new ClientSwitchRequest(authToken, username, null, null);
+        try(Scanner inputScanner = new Scanner(input)) {
+            switch(inputScanner.next().toLowerCase().strip()) {
+                case "help" -> printHelp();
+                case "redraw" -> drawBoard(color, facade);
+                case "leave" -> {return leave(facade);}
+                case "move" -> makeMove(input, facade);
+                case "resign" -> resign(facade);
+                case "highlight" -> highlight(input, facade);
+                default -> printError("Unexpected command; type \"help\" to list valid commands.");
+            }
+        }
+        return null;
     }
 
     @Override
