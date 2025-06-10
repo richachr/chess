@@ -333,3 +333,53 @@
 - You can call the level as a method on the logger to log at that level e.g. logger.severe(message), but you can't include throwables.
 - You can log when you enter/exit a method using logger.entering/exiting(className, methodName).
 - Loggers should be named after their class for relevance in printing log messages.
+- Assertions are used in debugging as sanity checks.
+- Assertions take the form `assert (condition) [: expression]`. The things following the : will be added to the exception, and can be variables that caused the exception or messages.
+- To enable assertions, run the program with the -ea flag under VM options. -ea:class/package enables assertions for specific classes/packages. You can disable them with -da:class/package.
+- -esa enables assertions for system classes.
+- Assertions should be true, and will throw an error if false.
+- Fix your bug, don't throw an exception.
+- Check your parameters to ensure that they're valid, and throw an exception if they're not (InvalidArgumentException).
+- If the programmer controls the code that calls a method, assert. If someone else controls the code that calls, throw an exception.
+- HTTP is limited because the server cannot initiate, it can only respond. It has lots of overheads and is inefficient.
+- Short polling: Asking over and over if there was anything new from the server.
+- Long polling: Leaving the connection held open until the server has something, and then polling again.
+- Websocket upgrades an HTTP connection, opens it so the server and client can send requests, allows for more efficiency, and sends ping/pongs to kill dead connections.
+- WS can be P2P, not just client/server
+- POST-CHESS NOTES:
+- Hackers break into systems to gain access to data (data at rest in databases, data in motion over a connection), gain access to systems (inject code, launch attacks, disable/modify systems, monitor activity), or disable a system (DDoS).
+- Security goals: data confidentiality (authorized users only see proper data), authentication (verify identity, decide trust level), data integrity (ensure data has not been modified), and non-repudiation (verifying origin of data).
+- Cryptographic hash functions: hash functions that are one-way (input cannot be recovered), deterministic (same output for same input), fixed-size (regardless of input size), and pseudo-random (output seems statistically random, small change leads to big difference).
+- Hash algorithms: MD-5 from MIT (128 bit, cracked), SHA-1 from NSA (160 bit, cracked), SHA-2 from NSA (224 up to 512 bit, 256 preferred), SHA-3.
+- Use MessageDigest to hash using these algorithms.
+- SHA-1 is used for git commit ids, SHA-256 is used to verify file integrity for downloads.
+- Hashing is used to create a compact, unique identifier. It can prove that data has not been changed, store and verify passwords, sign things digitally, and mine bitcoin.
+- Passwords should be stored as hashes, not plaintext.
+- Storing hashes can allow hackers to see who has the same password, and create maps for hashes to passwords.
+- Protect from these attacks by adding salt. Generate salt for each user, append salt to the password, hash, store hash and salt.
+- It's best to use an expensive hash function. Current options include Argon2, scrypt, and bcrypt.
+- Bcrypt includes the salt in the returned hash string.
+- Encryption encodes data so only those authorized can use it, decrypt brings data back to its original form.
+- A key is a piece of input used to encode and decode data. The larger the key size (# of bits in the key), the harder it is to crack.
+- Ciphertext is an encoded string, and a cipher is the algorithm.
+- Symmetric Key Algorithms: The same key is used to encrypt and decrypt (secret key). Include DES 56-bit (cracked), AES 128-256 bit with 128 bit init. vector, Blowfish 32-448 bit, and Twofish 128-256 bit.
+- Java has built in key generation, cipher, and secure RNGs.
+- Asymmetric Key Algorithms: Different keys are used to encrypt and decrypt (public key). Include RSA 2048 and 4096 bit and ECC 192-448 bit keys (used in bitcoin).
+- The two keys are generated together as a key pair and mathematically related, but given one key, it is infeasible to calculate the other key.
+- The keys reverse each other, so you can use either to encrypt as long as you use the other to decrypt.
+- Give the public key to someone else to use in encryption, then keep your private key secret and use it to decrypt. The private key must be kept secret.
+- Keys are usually stored in secure files.
+- Public key encryption can only encrypt a small amount of data (RSA can only encrypt up to key size). It's slow than symmetric encryption.
+- HTTPS protects data in motion, application- and database-level encryption protect data at rest.
+- Password managers store all encrypted passwords in an encrypted file on disk, with one master password/phrase used to access them all, which is converted to a symmetric encryption key.
+- Secure key exchange uses public key encryption to send symmetric/secret keys, which are then used to encrypt large amounts of data.
+- TLS handshake is just a more complicated secure key exchange with symmetric keys generated by 3 random numbers. Numbers are sent Client -> server (client random), server -> client (server random), client -> server (pre-master secret, encrypted with public key).
+- Public key of the server sent during the handshake is a public key certificate used to verify the server's identity, which has public key and owner's info.
+- Certificates are issued by trusted Certificate Authorities. To get one, generate public/private keys, secure the private key, and send your public key + info to the certificate authority in a certificate signing request (CSR).
+- The certificates are digitally signed by the Certificate Authority.
+- Developers can create a self-signed certificate for development and testing. OpenSSL is a popular tool for doing so.
+- To sign data digitally, a signer runs their data through a cryptographic hash like SHA-256.
+- The output of the hash is a digest, which is encrypted using the signer's private key. This is the digital signature.
+- The signer sends the original data, as well as the digital signature (encrypted digest) to the receiver.
+- The receiver decrypts the digital signature using the signer's public key, and then hashes the original data using the same algorithm, after which the digital signature is compared to verify its authenticity.
+- Cryptocurrency uses digital signatures to verify transactions. Anything sent online can be digitally signed to verify origin and prevent forgery.
