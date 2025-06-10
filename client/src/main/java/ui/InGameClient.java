@@ -41,7 +41,18 @@ public class InGameClient implements Client {
 
     @Override
     public void printHelp() {
-
+        System.out.println(EscapeSequences.EMPTY + "help -> " + EscapeSequences.SET_TEXT_ITALIC +
+                "display help text." + EscapeSequences.RESET_TEXT_ITALIC);
+        System.out.println(EscapeSequences.EMPTY + "redraw -> " + EscapeSequences.SET_TEXT_ITALIC +
+                "redraw the current game board." + EscapeSequences.RESET_TEXT_ITALIC);
+        System.out.println(EscapeSequences.EMPTY + "leave -> " + EscapeSequences.SET_TEXT_ITALIC +
+                "leave the current game." + EscapeSequences.RESET_TEXT_ITALIC);
+        System.out.println(EscapeSequences.EMPTY + "move [from space] [to space] -> " + EscapeSequences.SET_TEXT_ITALIC +
+                "make a move, if valid." + EscapeSequences.RESET_TEXT_ITALIC);
+        System.out.println(EscapeSequences.EMPTY + "resign -> " + EscapeSequences.SET_TEXT_ITALIC +
+                "forfeit the game." + EscapeSequences.RESET_TEXT_ITALIC);
+        System.out.println(EscapeSequences.EMPTY + "highlight [space] -> " + EscapeSequences.SET_TEXT_ITALIC +
+                "highlight legal moves for a piece." + EscapeSequences.RESET_TEXT_ITALIC);
     }
 
     public void drawBoard(ChessGame.TeamColor color, ServerFacade facade) {
@@ -140,5 +151,9 @@ public class InGameClient implements Client {
         System.out.print(EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_WHITE);
         System.out.printf(" %d ", row);
         System.out.println(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+    }
+
+    public ChessPosition getPositionFromCoordinate(String coordinate) {
+
     }
 }
