@@ -1,12 +1,13 @@
 package ui;
 
 import facade.ServerFacade;
+import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 
 import static ui.GameState.*;
 
-public class InputLoop {
+public class InputLoop implements NotificationHandler {
     GameState state = LOGGED_OUT;
     String prefix = state.toString();
     ServerFacade facade;
@@ -67,4 +68,7 @@ public class InputLoop {
         }
     }
 
+    public void notify(ServerMessage notification) {
+
+    }
 }
