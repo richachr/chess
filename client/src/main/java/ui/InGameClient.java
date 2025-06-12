@@ -15,7 +15,7 @@ public class InGameClient implements Client {
 
     public InGameClient(ClientData data, String url, NotificationHandler notificationHandler) {
         this.data = data;
-        wsFacade = new WebSocketFacade(data, url, notificationHandler);
+        wsFacade = new WebSocketFacade(url, notificationHandler);
         wsFacade.connect();
     }
 
