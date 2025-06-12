@@ -3,6 +3,8 @@ package ui;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import facade.ResponseException;
+import websocket.ClientData;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 import websocket.messages.ServerMessageTypeAdapter;
 
@@ -43,4 +45,13 @@ public class WebSocketFacade extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {}
+
+    public void connect(ClientData data) throws ResponseException {
+        var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, data);
+        try {
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
 }
