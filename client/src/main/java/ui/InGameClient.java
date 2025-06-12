@@ -15,6 +15,7 @@ public class InGameClient implements Client {
     private final String username;
     private final Integer gameId;
     private final ChessGame.TeamColor color;
+    private ChessBoard board;
 
     public InGameClient(String authToken, String username, Integer gameId, ChessGame.TeamColor color) {
         this.authToken = authToken;
@@ -24,11 +25,11 @@ public class InGameClient implements Client {
     }
 
     @Override
-    public ClientSwitchRequest processInput(String input, ServerFacade facade) {
+    public ClientData processInput(String input, ServerFacade facade) {
         try(Scanner inputScanner = new Scanner(input)) {
             switch(inputScanner.next().toLowerCase().strip()) {
                 case "help" -> printHelp();
-                case "redraw" -> drawBoard(color, facade);
+                case "redraw" -> drawBoard(color);
                 case "leave" -> {return leave(facade);}
                 case "move" -> makeMove(input, facade);
                 case "resign" -> resign(facade);
@@ -55,19 +56,17 @@ public class InGameClient implements Client {
                 "highlight legal moves for a piece." + EscapeSequences.RESET_TEXT_ITALIC);
     }
 
-    public void drawBoard(ChessGame.TeamColor color, ServerFacade facade) {
+    public void loadBoard(ChessBoard board) {
+        this.board = board;
+        drawBoard(color);
+    }
+
+    private void drawBoard(ChessGame.TeamColor color) {
         if(color == null) {
-            drawBoard(ChessGame.TeamColor.WHITE, facade);
+            drawBoard(ChessGame.TeamColor.WHITE);
             return;
         }
         try {
-            var games = facade.listGames(new ListGamesRequest(authToken)).games();
-            ChessBoard board = null;
-            for (var gameData : games) {
-                if (gameData.gameID().equals(gameId)) {
-                    board = gameData.game().getBoard();
-                }
-            }
             if(board == null) {
                 throw new FindException("No chess board found for provided game id.");
             }
@@ -80,8 +79,6 @@ public class InGameClient implements Client {
                 drawBoardBody(true, board);
                 drawBoardLetters(true);
             }
-        } catch (ResponseException e) {
-            printError(e.getMessage().replaceAll("Error: ", ""));
         } catch (Exception e) {
             printError(e.getMessage());
         }
