@@ -1,6 +1,9 @@
 package ui;
 
 import facade.ServerFacade;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
@@ -24,7 +27,7 @@ public class InputLoop implements NotificationHandler {
         inputScanner.useDelimiter("\n");
         ClientSwitchRequest switchRequest = null;
         while (!userInput.equalsIgnoreCase("quit")) {
-            System.out.printf("%s > " + EscapeSequences.SET_TEXT_BLINKING, prefix);
+            printUserPrompt();
             userInput = inputScanner.nextLine();
             System.out.print(EscapeSequences.RESET_TEXT_BLINKING);
             try {
@@ -69,6 +72,39 @@ public class InputLoop implements NotificationHandler {
     }
 
     public void notify(ServerMessage notification) {
+        assert(currentClient.getClass() == InGameClient.class);
+        System.out.println(EscapeSequences.ERASE_LINE);
+        switch(notification.getServerMessageType()) {
+            case LOAD_GAME -> {
+                LoadGameMessage loadGameMessage = (LoadGameMessage) notification;
+                loadGame(loadGameMessage);
+            }
+            case ERROR -> {
+                ErrorMessage errorMessage = (ErrorMessage) notification;
+                printErrorMessage(errorMessage);
+            }
+            case NOTIFICATION -> {
+                NotificationMessage notificationMessage = (NotificationMessage) notification;
+                printNotification(notificationMessage);
+            }
+        }
+        printUserPrompt();
+    }
 
+    private void loadGame(LoadGameMessage notification) {
+        InGameClient wsClient = (InGameClient) currentClient;
+        wsClient.loadBoard(notification.game);
+    }
+
+    private void printErrorMessage(ErrorMessage notification) {
+        currentClient.printError(notification.errorMessage.replaceAll("Error: ", ""));
+    }
+
+    private void printNotification(NotificationMessage notification) {
+        System.out.println(notification.message);
+    }
+
+    private void printUserPrompt() {
+        System.out.printf("%s > " + EscapeSequences.SET_TEXT_BLINKING, prefix);
     }
 }
