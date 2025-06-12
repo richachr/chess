@@ -3,25 +3,20 @@ package ui;
 import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPosition;
-import request.ListGamesRequest;
-import facade.ResponseException;
 import facade.ServerFacade;
 
 import java.lang.module.FindException;
 import java.util.Scanner;
 
 public class InGameClient implements Client {
-    private final String authToken;
-    private final String username;
-    private final Integer gameId;
-    private final ChessGame.TeamColor color;
+    private final ClientData data;
     private ChessBoard board;
+    private WebSocketFacade wsFacade;
 
-    public InGameClient(String authToken, String username, Integer gameId, ChessGame.TeamColor color) {
-        this.authToken = authToken;
-        this.username = username;
-        this.gameId = gameId;
-        this.color = color;
+    public InGameClient(ClientData data, String url, NotificationHandler notificationHandler) {
+        this.data = data;
+        wsFacade = new WebSocketFacade(data, url, notificationHandler);
+        wsFacade.connect();
     }
 
     @Override
@@ -29,7 +24,7 @@ public class InGameClient implements Client {
         try(Scanner inputScanner = new Scanner(input)) {
             switch(inputScanner.next().toLowerCase().strip()) {
                 case "help" -> printHelp();
-                case "redraw" -> drawBoard(color);
+                case "redraw" -> drawBoard(data.playerColor());
                 case "leave" -> {return leave(facade);}
                 case "move" -> makeMove(input, facade);
                 case "resign" -> resign(facade);
@@ -58,7 +53,7 @@ public class InGameClient implements Client {
 
     public void loadBoard(ChessBoard board) {
         this.board = board;
-        drawBoard(color);
+        drawBoard(data.playerColor());
     }
 
     private void drawBoard(ChessGame.TeamColor color) {
