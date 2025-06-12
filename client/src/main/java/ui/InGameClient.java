@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPosition;
 import facade.ServerFacade;
+import websocket.ClientData;
 
 import java.lang.module.FindException;
 import java.util.Scanner;

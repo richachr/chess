@@ -8,6 +8,7 @@ import request.ListGamesRequest;
 import request.LogoutRequest;
 import facade.ResponseException;
 import facade.ServerFacade;
+import websocket.ClientData;
 
 import java.util.NoSuchElementException;
 import java.util.Scanner;

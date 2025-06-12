@@ -1,6 +1,7 @@
 package ui;
 
 import facade.ServerFacade;
+import websocket.ClientData;
 
 public interface Client {
     void printHelp();

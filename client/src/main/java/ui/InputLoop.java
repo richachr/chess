@@ -1,6 +1,7 @@
 package ui;
 
 import facade.ServerFacade;
+import websocket.ClientData;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
