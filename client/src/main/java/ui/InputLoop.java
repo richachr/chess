@@ -51,10 +51,7 @@ public class InputLoop implements NotificationHandler {
                 } else {
                     assert (switchRequest.gameId() != null);
                     state = IN_GAME;
-                    currentClient = new InGameClient(switchRequest.authToken(),
-                            switchRequest.username(),
-                            switchRequest.gameId(),
-                            switchRequest.playerColor());
+                    currentClient = new InGameClient(switchRequest, facade.getUrl(), this);
                 }
             }
             case LOGGED_OUT -> {
