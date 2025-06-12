@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class LoggedOutClient implements Client {
     @Override
-    public ClientSwitchRequest processInput(String input, ServerFacade facade) {
+    public ClientData processInput(String input, ServerFacade facade) {
         try(Scanner inputScanner = new Scanner(input)) {
             switch(inputScanner.next().toLowerCase().strip()) {
                 case "help" -> printHelp();
@@ -35,7 +35,7 @@ public class LoggedOutClient implements Client {
                            "register a new user." + EscapeSequences.RESET_TEXT_ITALIC);
     }
 
-    public ClientSwitchRequest login(String input, ServerFacade facade) {
+    public ClientData login(String input, ServerFacade facade) {
         try(Scanner inputScanner = new Scanner(input)) {
             inputScanner.next();
             LoginRequest req;
@@ -43,7 +43,7 @@ public class LoggedOutClient implements Client {
                 req = new LoginRequest(inputScanner.next(), inputScanner.next());
                 var res = facade.login(req);
                 System.out.printf("Logged in as %s%n", req.username());
-                return new ClientSwitchRequest(res.authToken(), res.username(),null, null);
+                return new ClientData(res.authToken(), res.username(),null, null);
             } catch (NoSuchElementException e) {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
             } catch (ResponseException e) {
@@ -53,7 +53,7 @@ public class LoggedOutClient implements Client {
         return null;
     }
 
-    public ClientSwitchRequest register(String input, ServerFacade facade) {
+    public ClientData register(String input, ServerFacade facade) {
         try(Scanner inputScanner = new Scanner(input)) {
             inputScanner.next();
             RegisterRequest req;
@@ -61,7 +61,7 @@ public class LoggedOutClient implements Client {
                 req = new RegisterRequest(inputScanner.next(), inputScanner.next(), inputScanner.next());
                 var res = facade.register(req);
                 System.out.printf("Registered user %s%n", req.username());
-                return new ClientSwitchRequest(res.authToken(), res.username(), null, null);
+                return new ClientData(res.authToken(), res.username(), null, null);
             } catch (NoSuchElementException e) {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
             } catch (ResponseException e) {

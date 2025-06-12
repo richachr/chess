@@ -23,7 +23,7 @@ public class LoggedInClient implements Client {
     }
 
     @Override
-    public ClientSwitchRequest processInput(String input, ServerFacade facade) {
+    public ClientData processInput(String input, ServerFacade facade) {
         try(Scanner inputScanner = new Scanner(input)) {
             switch(inputScanner.next().toLowerCase().strip()) {
                 case "help" -> printHelp();
@@ -55,12 +55,12 @@ public class LoggedInClient implements Client {
                            "join a game as an observer." + EscapeSequences.RESET_TEXT_ITALIC);
     }
 
-    public ClientSwitchRequest logout(ServerFacade facade) {
+    public ClientData logout(ServerFacade facade) {
         LogoutRequest req = new LogoutRequest(authToken);
         try {
             facade.logout(req);
             System.out.printf("Logged out as user %s\n", username);
-            return new ClientSwitchRequest(null, null,null, null);
+            return new ClientData(null, null,null, null);
         }  catch (ResponseException e) {
             printError(e.getMessage().replaceAll("Error: ", ""));
         }
@@ -108,7 +108,7 @@ public class LoggedInClient implements Client {
         }
     }
 
-    public ClientSwitchRequest join(String input, ServerFacade facade) {
+    public ClientData join(String input, ServerFacade facade) {
         try(Scanner inputScanner = new Scanner(input)) {
             inputScanner.next();
             JoinGameRequest req;
@@ -122,7 +122,7 @@ public class LoggedInClient implements Client {
                 req = new JoinGameRequest(gameId, inputScanner.next(), authToken);
                 facade.joinGame(req);
                 System.out.printf("Joined game as %s\n", req.playerColor());
-                return new ClientSwitchRequest(authToken, username, gameId, ChessGame.TeamColor.valueOf(req.playerColor().toUpperCase()));
+                return new ClientData(authToken, username, gameId, ChessGame.TeamColor.valueOf(req.playerColor().toUpperCase()));
             } catch (NoSuchElementException e) {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
             } catch (ResponseException e) {
@@ -134,7 +134,7 @@ public class LoggedInClient implements Client {
         return null;
     }
 
-    public ClientSwitchRequest observe(String input, ServerFacade facade) {
+    public ClientData observe(String input, ServerFacade facade) {
         try(Scanner inputScanner = new Scanner(input)) {
             inputScanner.next();
             try {
@@ -144,7 +144,7 @@ public class LoggedInClient implements Client {
                     list(facade);
                 }
                 gameId = games[gameId - 1].gameID();
-                return new ClientSwitchRequest(authToken, username, gameId, null);
+                return new ClientData(authToken, username, gameId, null);
             } catch (NoSuchElementException e) {
                 printError("Incorrect parameters; type \"help\" to list valid syntax.");
             } catch (ArrayIndexOutOfBoundsException e) {

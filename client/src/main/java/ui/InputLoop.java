@@ -25,7 +25,7 @@ public class InputLoop implements NotificationHandler {
         String userInput = "";
         Scanner inputScanner = new Scanner(System.in);
         inputScanner.useDelimiter("\n");
-        ClientSwitchRequest switchRequest = null;
+        ClientData switchRequest = null;
         while (!userInput.equalsIgnoreCase("quit")) {
             printUserPrompt();
             userInput = inputScanner.nextLine();
@@ -41,7 +41,7 @@ public class InputLoop implements NotificationHandler {
         }
     }
 
-    private void switchState(ClientSwitchRequest switchRequest) {
+    private void switchState(ClientData switchRequest) {
         switch(state) {
             case LOGGED_IN -> {
                 if(switchRequest.authToken() == null) {
