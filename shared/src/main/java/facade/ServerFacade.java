@@ -105,4 +105,7 @@ public class ServerFacade {
         }
     }
 
+    public String getUrl() {
+        return url;
+    }
 }
