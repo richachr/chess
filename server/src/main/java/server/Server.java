@@ -11,6 +11,7 @@ import spark.*;
 
 public class Server {
     public static final boolean  USE_MEMORY_DAO = false;
+    private final WebSocketHandler wsHandler = new WebSocketHandler(USE_MEMORY_DAO);
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -18,6 +19,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.webSocket("/ws", wsHandler);
         Spark.post("/user","application/json", (req, res) -> new RegisterHandler(USE_MEMORY_DAO).handle(req, res));
         Spark.post("/session", "application/json", (req, res) -> new LoginHandler(USE_MEMORY_DAO).handle(req, res));
         Spark.delete("/session", "application/json", (req, res) -> new LogoutHandler(USE_MEMORY_DAO).handle(req, res));
