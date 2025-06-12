@@ -14,6 +14,7 @@ public class ChessGame implements Cloneable {
     ChessBoard board;
     TeamColor turnColor;
     boolean isTestGame;
+    boolean isComplete;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -238,5 +239,13 @@ public class ChessGame implements Cloneable {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    public boolean isComplete() {
+        return isComplete;
+    }
+
+    public void setComplete(boolean complete) {
+        isComplete = complete;
     }
 }
