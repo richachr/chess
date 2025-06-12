@@ -2,10 +2,12 @@ package ui;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import facade.ResponseException;
 import websocket.messages.ServerMessage;
 import websocket.messages.ServerMessageTypeAdapter;
 
 import javax.websocket.*;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -33,8 +35,8 @@ public class WebSocketFacade extends Endpoint {
                     notificationHandler.notify(serverMessage);
                 }
             });
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        } catch (URISyntaxException | DeploymentException | IOException e) {
+            throw new ResponseException(500, e.getMessage());
         }
 
     }
