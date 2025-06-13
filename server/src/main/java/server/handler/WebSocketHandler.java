@@ -99,7 +99,7 @@ public class WebSocketHandler {
         gameDAO.updateGame(gameId, data);
         var loadGameMessage = new LoadGameMessage(data.game());
         connectionManager.sendAndExclude(null, gameId, loadGameMessage);
-        String message = String.format("%s moved their piece at %s to %s", color.toString(),
+        String message = String.format("%s moved their piece at %s to %s", username,
                                        CoordinateHandler.getCoordinate(move.getStartPosition()),
                                        CoordinateHandler.getCoordinate(move.getEndPosition()));
         if(move.getPromotionPiece() != null) {
@@ -107,16 +107,21 @@ public class WebSocketHandler {
         }
         var notification = new NotificationMessage(message);
         connectionManager.sendAndExclude(username, gameId, notification);
+        String opponentUsername = null;
+        switch(color.getOpponent()) {
+            case WHITE -> opponentUsername = data.whiteUsername();
+            case BLACK -> opponentUsername = data.blackUsername();
+        }
         if(data.game().isInCheck(color.getOpponent())) {
-            message = String.format("%s is in check.", color.getOpponent());
+            message = String.format("%s is in check.", opponentUsername);
         }
         if(data.game().isInStalemate(color.getOpponent())) {
-            message = String.format("%s is in stalemate. The game is over.", color.getOpponent());
+            message = String.format("%s is in stalemate. The game is over.", opponentUsername);
             data.game().setComplete(true);
             gameDAO.updateGame(gameId, data);
         }
         if(data.game().isInCheckmate(color.getOpponent())) {
-            message = String.format("%s is in checkmate. The game is over.", color.getOpponent());
+            message = String.format("%s is in checkmate. The game is over.", opponentUsername);
             data.game().setComplete(true);
             gameDAO.updateGame(gameId, data);
         }
@@ -152,7 +157,7 @@ public class WebSocketHandler {
             case null -> throw new UnauthorizedException("Observers cannot resign. Use `leave` instead.");
         }
         gameDAO.updateGame(gameId, game);
-        String message = String.format("%s resigned while playing as %s. The game is over.", username, color.toString().toLowerCase());
+        String message = String.format("%s resigned. The game is over.", username);
         var notification = new NotificationMessage(message);
         connectionManager.sendAndExclude(null, gameId, notification);
     }
