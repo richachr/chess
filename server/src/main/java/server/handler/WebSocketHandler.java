@@ -4,10 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.SQLGameDAO;
+import dataaccess.*;
 import facade.ResponseException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
@@ -15,6 +12,8 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.Server;
 import server.websocket.ConnectionManager;
+import service.BadRequestException;
+import service.Service;
 import service.UnauthorizedException;
 import websocket.CoordinateHandler;
 import websocket.commands.UserGameCommand;
@@ -25,17 +24,20 @@ import java.io.IOException;
 
 @WebSocket
 public class WebSocketHandler {
-    private static boolean USE_MEMORY_DAO = false;
+    private final boolean USE_MEMORY_DAO;
     private final ConnectionManager connectionManager = new ConnectionManager();
     private GameDAO gameDAO;
+    private AuthDAO authDAO;
 
     public WebSocketHandler(boolean useMemoryDao) throws ResponseException {
         this.USE_MEMORY_DAO = useMemoryDao;
-        if(useMemoryDao) {
+        if(USE_MEMORY_DAO) {
             gameDAO = new MemoryGameDAO();
+            authDAO = new MemoryAuthDAO();
         } else {
             try {
                 gameDAO = new SQLGameDAO();
+                authDAO = new SQLAuthDAO();
             } catch (DataAccessException e) {
                 Server.handleException(e);
             }
@@ -47,19 +49,24 @@ public class WebSocketHandler {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         try {
             switch(command.getCommandType()) {
-                case CONNECT -> connect();
-                case MAKE_MOVE -> makeMove();
-                case LEAVE -> leave();
-                case RESIGN -> resign();
+                case CONNECT -> connect(session, command.getAuthToken(), command.getGameID(), command.getColor());
+                case MAKE_MOVE -> makeMove(command.getAuthToken(), command.getGameID(), command.getColor(), command.getMove());
+                case LEAVE -> leave(command.getAuthToken(), command.getGameID(), command.getColor());
+                case RESIGN -> resign(command.getAuthToken(), command.getGameID(), command.getColor());
             }
         } catch (Exception e) {
-            Server.handleException();
+            Server.handleException(e);
         }
     }
 
-    private void connect(Session session, String username, Integer gameId, ChessGame.TeamColor color) throws DataAccessException, IOException {
+    private void connect(Session session, String authToken, Integer gameId, ChessGame.TeamColor color)
+            throws DataAccessException, IOException, BadRequestException, UnauthorizedException {
+        String username = getUsernameAndCheckAuth(authToken);
         connectionManager.add(session, username, gameId);
         ChessGame game = gameDAO.getGame(gameId).game();
+        if(game == null) {
+            throw new BadRequestException("Game ID not found.");
+        }
         var loadGameMessage = new LoadGameMessage(game.getBoard());
         connectionManager.sendMessageToUser(username, gameId, loadGameMessage);
         String message;
@@ -72,9 +79,16 @@ public class WebSocketHandler {
         connectionManager.sendAndExclude(username, gameId, notification);
     }
 
-    private void makeMove(Session session, String username, Integer gameId, ChessGame.TeamColor color, ChessMove move) throws DataAccessException, IOException, InvalidMoveException, UnauthorizedException {
-        connectionManager.add(session, username, gameId);
+    private void makeMove(String authToken, Integer gameId, ChessGame.TeamColor color, ChessMove move)
+            throws DataAccessException, IOException, InvalidMoveException, UnauthorizedException, BadRequestException {
+        String username = getUsernameAndCheckAuth(authToken);
         GameData data = gameDAO.getGame(gameId);
+        if(data == null) {
+            throw new BadRequestException("Game ID not found.");
+        }
+        if(Service.isNotAuthorized(authToken, USE_MEMORY_DAO)) {
+            throw new UnauthorizedException("Invalid authentication. Please log in again.");
+        }
         if(color != data.game().getTeamTurn()) {
             throw new UnauthorizedException("It's not your turn.");
         }
@@ -89,7 +103,7 @@ public class WebSocketHandler {
                                        CoordinateHandler.getCoordinate(move.getStartPosition()),
                                        CoordinateHandler.getCoordinate(move.getEndPosition()));
         if(move.getPromotionPiece() != null) {
-            message.concat(String.format(" and promoted to a %s", move.getPromotionPiece().toString().toLowerCase()));
+            message = message.concat(String.format(" and promoted to a %s", move.getPromotionPiece().toString().toLowerCase()));
         }
         var notification = new NotificationMessage(message);
         connectionManager.sendAndExclude(username, gameId, notification);
@@ -108,5 +122,46 @@ public class WebSocketHandler {
         }
         notification = new NotificationMessage(message);
         connectionManager.sendAndExclude(null, gameId, notification);
+    }
+
+    private void leave(String authToken, Integer gameId, ChessGame.TeamColor color)
+            throws IOException, DataAccessException, UnauthorizedException {
+        String username = getUsernameAndCheckAuth(authToken);
+        if(color != null) {
+            GameData game = gameDAO.getGame(gameId);
+            switch(color) {
+                case WHITE ->
+                    game = new GameData(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
+                case BLACK ->
+                    game = new GameData(game.gameID(), game.whiteUsername(), null, game.gameName(), game.game());
+            }
+            gameDAO.updateGame(gameId, game);
+        }
+        String message = String.format("%s left the game.", username);
+        var notification = new NotificationMessage(message);
+        connectionManager.sendAndExclude(username, gameId, notification);
+        connectionManager.remove(username, gameId);
+    }
+
+    private void resign(String authToken, Integer gameId, ChessGame.TeamColor color)
+            throws IOException, DataAccessException, UnauthorizedException {
+        String username = getUsernameAndCheckAuth(authToken);
+        GameData game = gameDAO.getGame(gameId);
+        switch(color) {
+            case WHITE, BLACK -> game.game().setComplete(true);
+            case null -> throw new UnauthorizedException("Observers cannot resign. Use `leave` instead.");
+        }
+        gameDAO.updateGame(gameId, game);
+        String message = String.format("%s resigned while playing as %s. The game is over.", username, color.toString().toLowerCase());
+        var notification = new NotificationMessage(message);
+        connectionManager.sendAndExclude(null, gameId, notification);
+    }
+
+    private String getUsernameAndCheckAuth(String authToken) throws UnauthorizedException, DataAccessException {
+        var authData = authDAO.getAuth(authToken);
+        if(authData == null) {
+            throw new UnauthorizedException("Invalid authentication. Please log in again.");
+        }
+        return authData.username();
     }
 }
