@@ -25,13 +25,17 @@ import java.io.IOException;
 
 @WebSocket
 public class WebSocketHandler {
-    private final boolean USE_MEMORY_DAO;
+    private static boolean USE_MEMORY_DAO;
     private final ConnectionManager connectionManager = new ConnectionManager();
     private GameDAO gameDAO;
     private AuthDAO authDAO;
 
+    public WebSocketHandler() throws ResponseException {
+        this(false);
+    }
+
     public WebSocketHandler(boolean useMemoryDao) throws ResponseException {
-        this.USE_MEMORY_DAO = useMemoryDao;
+        USE_MEMORY_DAO = useMemoryDao;
         if(USE_MEMORY_DAO) {
             gameDAO = new MemoryGameDAO();
             authDAO = new MemoryAuthDAO();
