@@ -81,14 +81,14 @@ public class WebSocketHandler {
     private void connect(Session session, String authToken, Integer gameId)
             throws DataAccessException, IOException, BadRequestException, UnauthorizedException {
         String username = getUsernameAndCheckAuth(authToken);
-        connectionManager.add(session, username, gameId);
+        connectionManager.add(session, authToken, gameId);
         GameData data = gameDAO.getGame(gameId);
         if(data == null) {
             throw new BadRequestException("Game ID not found.");
         }
         ChessGame.TeamColor color = getColor(username, data);
         var loadGameMessage = new LoadGameMessage(data.game());
-        connectionManager.sendMessageToUser(username, gameId, loadGameMessage);
+        connectionManager.sendMessageToUser(authToken, gameId, loadGameMessage);
         String message;
         if(color == null) {
             message = String.format("%s is observing.", username);
@@ -96,7 +96,7 @@ public class WebSocketHandler {
             message = String.format("%s is playing as %s", username, color.toString().toLowerCase());
         }
         var notification = new NotificationMessage(message);
-        connectionManager.sendAndExclude(username, gameId, notification);
+        connectionManager.sendAndExclude(authToken, gameId, notification);
     }
 
     private void makeMove(String authToken, Integer gameId, ChessMove move)
@@ -130,7 +130,7 @@ public class WebSocketHandler {
             message = message.concat(String.format(" and promoted to a %s", move.getPromotionPiece().toString().toLowerCase()));
         }
         var notification = new NotificationMessage(message);
-        connectionManager.sendAndExclude(username, gameId, notification);
+        connectionManager.sendAndExclude(authToken, gameId, notification);
         String opponentUsername = null;
         switch(color.getOpponent()) {
             case WHITE -> opponentUsername = data.whiteUsername();
@@ -173,8 +173,8 @@ public class WebSocketHandler {
         }
         String message = String.format("%s left the game.", username);
         var notification = new NotificationMessage(message);
-        connectionManager.sendAndExclude(username, gameId, notification);
-        connectionManager.remove(username, gameId);
+        connectionManager.sendAndExclude(authToken, gameId, notification);
+        connectionManager.remove(authToken, gameId);
     }
 
     private void resign(String authToken, Integer gameId)

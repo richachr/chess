@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<Integer, ArrayList<Connection>> connections = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<Integer, ArrayList<Connection>> connections = new ConcurrentHashMap<>();
 
-    public void add(Session session, String username, Integer gameId) {
-        Connection conn = new Connection(session, username);
+    public void add(Session session, String authToken, Integer gameId) {
+        Connection conn = new Connection(session, authToken);
         var gameConnections = connections.get(gameId);
         if(gameConnections == null) {
             gameConnections = new ArrayList<>();
@@ -22,16 +22,16 @@ public class ConnectionManager {
         connections.put(gameId, gameConnections);
     }
 
-    public void remove(String username, Integer gameId) {
+    public void remove(String authToken, Integer gameId) {
         var gameConnections = connections.get(gameId);
         if(gameConnections == null) {
             return;
         }
-        gameConnections.removeIf((conn) -> conn.username().equalsIgnoreCase(username));
+        gameConnections.removeIf((conn) -> conn.authToken().equalsIgnoreCase(authToken));
         connections.put(gameId, gameConnections);
     }
 
-    public void sendAndExclude(String userToExclude, Integer gameId, ServerMessage message) throws IOException {
+    public void sendAndExclude(String authToExclude, Integer gameId, ServerMessage message) throws IOException {
         var gameConnections = connections.get(gameId);
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(ServerMessage.class, new ServerMessageTypeAdapter());
@@ -39,7 +39,7 @@ public class ConnectionManager {
         String messageString = gson.toJson(message);
         for(Connection conn : gameConnections) {
             if(conn.session().isOpen()) {
-                if(!conn.username().equalsIgnoreCase(userToExclude)) {
+                if(!conn.authToken().equalsIgnoreCase(authToExclude)) {
                     conn.sendMessage(messageString);
                 }
             } else {
@@ -49,7 +49,7 @@ public class ConnectionManager {
         connections.put(gameId, gameConnections);
     }
 
-    public void sendMessageToUser(String user, Integer gameId, ServerMessage message) throws IOException {
+    public void sendMessageToUser(String authToken, Integer gameId, ServerMessage message) throws IOException {
         var gameConnections = connections.get(gameId);
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(ServerMessage.class, new ServerMessageTypeAdapter());
@@ -57,7 +57,7 @@ public class ConnectionManager {
         String messageString = gson.toJson(message);
         for(Connection conn : gameConnections) {
             if(conn.session().isOpen()) {
-                if(conn.username().equalsIgnoreCase(user)) {
+                if(conn.authToken().equalsIgnoreCase(authToken)) {
                     conn.sendMessage(messageString);
                 }
             } else {
