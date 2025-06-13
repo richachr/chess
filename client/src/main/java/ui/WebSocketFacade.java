@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import facade.ResponseException;
@@ -48,6 +49,33 @@ public class WebSocketFacade extends Endpoint {
 
     public void connect(ClientData data) throws ResponseException {
         var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, data);
+        try {
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    public void makeMove(ClientData data, ChessMove move) throws ResponseException {
+        var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, data, move);
+        try {
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    public void leave(ClientData data) throws ResponseException {
+        var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, data);
+        try {
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    public void resign(ClientData data) throws ResponseException {
+        var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, data);
         try {
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException e) {
