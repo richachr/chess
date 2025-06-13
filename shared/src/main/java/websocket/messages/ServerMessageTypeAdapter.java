@@ -35,7 +35,7 @@ public class ServerMessageTypeAdapter extends TypeAdapter<ServerMessage> {
                 case "serverMessageType" -> serverMessageType = ServerMessage.ServerMessageType.valueOf(jsonReader.nextString());
                 case "message" -> message = jsonReader.nextString();
                 case "errorMessage" -> errorMessage = jsonReader.nextString();
-                case "game" -> game = new Gson().fromJson(jsonReader.nextString(), ChessGame.class);
+                case "game" -> game = new Gson().fromJson(jsonReader, ChessGame.class);
             }
         }
 
