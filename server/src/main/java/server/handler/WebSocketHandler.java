@@ -67,7 +67,7 @@ public class WebSocketHandler {
         if(game == null) {
             throw new BadRequestException("Game ID not found.");
         }
-        var loadGameMessage = new LoadGameMessage(game.getBoard());
+        var loadGameMessage = new LoadGameMessage(game);
         connectionManager.sendMessageToUser(username, gameId, loadGameMessage);
         String message;
         if(color == null) {
@@ -97,7 +97,7 @@ public class WebSocketHandler {
         }
         data.game().makeMove(move);
         gameDAO.updateGame(gameId, data);
-        var loadGameMessage = new LoadGameMessage(data.game().getBoard());
+        var loadGameMessage = new LoadGameMessage(data.game());
         connectionManager.sendAndExclude(null, gameId, loadGameMessage);
         String message = String.format("%s moved their piece at %s to %s", color.toString(),
                                        CoordinateHandler.getCoordinate(move.getStartPosition()),

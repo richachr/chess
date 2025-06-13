@@ -1,6 +1,6 @@
 package websocket.messages;
 
-import chess.ChessBoard;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -25,7 +25,7 @@ public class ServerMessageTypeAdapter extends TypeAdapter<ServerMessage> {
         ServerMessage.ServerMessageType serverMessageType = null;
         String message = null;
         String errorMessage = null;
-        ChessBoard game = null;
+        ChessGame game = null;
 
         jsonReader.beginObject();
 
@@ -35,7 +35,7 @@ public class ServerMessageTypeAdapter extends TypeAdapter<ServerMessage> {
                 case "serverMessageType" -> serverMessageType = ServerMessage.ServerMessageType.valueOf(jsonReader.nextString());
                 case "message" -> message = jsonReader.nextString();
                 case "errorMessage" -> errorMessage = jsonReader.nextString();
-                case "game" -> game = new Gson().fromJson(jsonReader.nextString(), ChessBoard.class);
+                case "game" -> game = new Gson().fromJson(jsonReader.nextString(), ChessGame.class);
             }
         }
 
