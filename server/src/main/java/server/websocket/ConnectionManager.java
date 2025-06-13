@@ -1,8 +1,10 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ServerMessage;
+import websocket.messages.ServerMessageTypeAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,10 +34,14 @@ public class ConnectionManager {
 
     public void sendAndExclude(String userToExclude, Integer gameId, ServerMessage message) throws IOException {
         var gameConnections = connections.get(gameId);
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(ServerMessage.class, new ServerMessageTypeAdapter());
+        var gson = builder.create();
+        String messageString = gson.toJson(message);
         for(Connection conn : gameConnections) {
             if(conn.session().isOpen()) {
                 if(!conn.username().equalsIgnoreCase(userToExclude)) {
-                    conn.sendMessage(new Gson().toJson(message));
+                    conn.sendMessage(messageString);
                 }
             } else {
                 gameConnections.remove(conn);
@@ -46,10 +52,14 @@ public class ConnectionManager {
 
     public void sendMessageToUser(String user, Integer gameId, ServerMessage message) throws IOException {
         var gameConnections = connections.get(gameId);
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(ServerMessage.class, new ServerMessageTypeAdapter());
+        var gson = builder.create();
+        String messageString = gson.toJson(message);
         for(Connection conn : gameConnections) {
             if(conn.session().isOpen()) {
                 if(conn.username().equalsIgnoreCase(user)) {
-                    conn.sendMessage(new Gson().toJson(message));
+                    conn.sendMessage(messageString);
                 }
             } else {
                 gameConnections.remove(conn);
