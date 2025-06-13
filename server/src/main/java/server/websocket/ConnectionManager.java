@@ -10,29 +10,29 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public static final ConcurrentHashMap<Integer, ArrayList<Connection>> connections = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<Integer, ArrayList<Connection>> CONNECTIONS = new ConcurrentHashMap<>();
 
     public void add(Session session, String authToken, Integer gameId) {
         Connection conn = new Connection(session, authToken);
-        var gameConnections = connections.get(gameId);
+        var gameConnections = CONNECTIONS.get(gameId);
         if(gameConnections == null) {
             gameConnections = new ArrayList<>();
         }
         gameConnections.add(conn);
-        connections.put(gameId, gameConnections);
+        CONNECTIONS.put(gameId, gameConnections);
     }
 
     public void remove(String authToken, Integer gameId) {
-        var gameConnections = connections.get(gameId);
+        var gameConnections = CONNECTIONS.get(gameId);
         if(gameConnections == null) {
             return;
         }
         gameConnections.removeIf((conn) -> conn.authToken().equalsIgnoreCase(authToken));
-        connections.put(gameId, gameConnections);
+        CONNECTIONS.put(gameId, gameConnections);
     }
 
     public void sendAndExclude(String authToExclude, Integer gameId, ServerMessage message) throws IOException {
-        var gameConnections = connections.get(gameId);
+        var gameConnections = CONNECTIONS.get(gameId);
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(ServerMessage.class, new ServerMessageTypeAdapter());
         var gson = builder.create();
@@ -46,11 +46,11 @@ public class ConnectionManager {
                 gameConnections.remove(conn);
             }
         }
-        connections.put(gameId, gameConnections);
+        CONNECTIONS.put(gameId, gameConnections);
     }
 
     public void sendMessageToUser(String authToken, Integer gameId, ServerMessage message) throws IOException {
-        var gameConnections = connections.get(gameId);
+        var gameConnections = CONNECTIONS.get(gameId);
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(ServerMessage.class, new ServerMessageTypeAdapter());
         var gson = builder.create();
@@ -64,6 +64,6 @@ public class ConnectionManager {
                 gameConnections.remove(conn);
             }
         }
-        connections.put(gameId, gameConnections);
+        CONNECTIONS.put(gameId, gameConnections);
     }
 }
