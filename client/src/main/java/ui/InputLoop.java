@@ -91,7 +91,7 @@ public class InputLoop implements NotificationHandler {
 
     private void loadGame(LoadGameMessage notification) {
         InGameClient wsClient = (InGameClient) currentClient;
-        wsClient.loadBoard(notification.game);
+        wsClient.loadGame(notification.game);
     }
 
     private void printErrorMessage(ErrorMessage notification) {
