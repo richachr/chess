@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 public class InGameClient implements Client {
     private final ClientData data;
+    private ChessGame game;
     private ChessBoard board;
     private WebSocketFacade wsFacade;
 
@@ -30,11 +31,12 @@ public class InGameClient implements Client {
         try(Scanner inputScanner = new Scanner(input)) {
             switch(inputScanner.next().toLowerCase().strip()) {
                 case "help" -> printHelp();
+                case "quit" -> leave(wsFacade);
                 case "redraw" -> drawBoard(data.playerColor());
-//                case "leave" -> {return leave(facade);}
-//                case "move" -> makeMove(input, facade);
-//                case "resign" -> resign(facade);
-//                case "highlight" -> highlight(input, facade);
+                case "leave" -> {return leave(wsFacade);}
+                case "move" -> makeMove(input, wsFacade);
+                case "resign" -> resign(wsFacade);
+                case "highlight" -> highlight(input, wsFacade);
                 default -> printError("Unexpected command; type \"help\" to list valid commands.");
             }
         }
@@ -57,8 +59,27 @@ public class InGameClient implements Client {
                 "highlight legal moves for a piece." + EscapeSequences.RESET_TEXT_ITALIC);
     }
 
-    public void loadBoard(ChessBoard board) {
-        this.board = board;
+    private ClientData leave(WebSocketFacade facade) {
+        try {
+            facade.leave(data);
+            System.out.println("You left the game.");
+            return new ClientData(data.authToken(), data.username(), null, null);
+        }  catch (ResponseException e) {
+            printError(e.getMessage().replaceAll("Error: ", ""));
+        }
+        return null;
+    }
+
+    private void resign(WebSocketFacade facade) {
+        try {
+            facade.resign(data);
+        }  catch (ResponseException e) {
+            printError(e.getMessage().replaceAll("Error: ", ""));
+        }
+    }
+
+    public void loadGame(ChessGame game) {
+        this.board = game.getBoard();
         drawBoard(data.playerColor());
     }
 
@@ -149,28 +170,5 @@ public class InGameClient implements Client {
         System.out.print(EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_WHITE);
         System.out.printf(" %d ", row);
         System.out.println(EscapeSequences.SET_BG_COLOR_DARK_GREY);
-    }
-
-    public ChessPosition getPositionFromCoordinate(String coordinate) throws Exception {
-        char[] coordinateArray = coordinate.toCharArray();
-        int row = 0;
-        int col = 0;
-        if(coordinateArray.length != 2) {
-            throw new Exception("Incorrect coordinate length. Please try again.");
-        }
-        for(char coord : coordinateArray) {
-            int coordInt = (int) coord;
-            if(coordInt >= 49 && coordInt <= 56) {
-                row = coordInt - 48;
-            } else if (coordInt >= 65 && coordInt <= 72) {
-                col = coordInt - 64;
-            } else if (coordInt >= 97 && coordInt <= 104) {
-                col = coordInt - 96;
-            } else {
-                throw new Exception("Incorrect coordinate entered. Please try again.");
-            }
-        }
-        assert(row != 0 && col != 0);
-        return new ChessPosition(row, col);
     }
 }
