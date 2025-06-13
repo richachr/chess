@@ -4,10 +4,12 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dataaccess.*;
 import facade.ResponseException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.Server;
@@ -17,8 +19,7 @@ import service.Service;
 import service.UnauthorizedException;
 import websocket.CoordinateHandler;
 import websocket.commands.UserGameCommand;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
+import websocket.messages.*;
 
 import java.io.IOException;
 
@@ -49,25 +50,40 @@ public class WebSocketHandler {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         try {
             switch(command.getCommandType()) {
-                case CONNECT -> connect(session, command.getAuthToken(), command.getGameID(), command.getColor());
-                case MAKE_MOVE -> makeMove(command.getAuthToken(), command.getGameID(), command.getColor(), command.getMove());
-                case LEAVE -> leave(command.getAuthToken(), command.getGameID(), command.getColor());
-                case RESIGN -> resign(command.getAuthToken(), command.getGameID(), command.getColor());
+                case CONNECT -> connect(session, command.getAuthToken(), command.getGameID());
+                case MAKE_MOVE -> makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
+                case LEAVE -> leave(command.getAuthToken(), command.getGameID());
+                case RESIGN -> resign(command.getAuthToken(), command.getGameID());
             }
         } catch (Exception e) {
-            Server.handleException(e);
+            handleError(session, e);
         }
     }
 
-    private void connect(Session session, String authToken, Integer gameId, ChessGame.TeamColor color)
+    @OnWebSocketError
+    public void handleError(Session session, Throwable e) {
+        var errorMessage = new ErrorMessage(e.getMessage());
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(ServerMessage.class, new ServerMessageTypeAdapter());
+        var gson = builder.create();
+        String messageString = gson.toJson(errorMessage);
+        try {
+            session.getRemote().sendString(messageString);
+        } catch (IOException ex) {
+            Server.handleException(ex);
+        }
+    }
+
+    private void connect(Session session, String authToken, Integer gameId)
             throws DataAccessException, IOException, BadRequestException, UnauthorizedException {
         String username = getUsernameAndCheckAuth(authToken);
         connectionManager.add(session, username, gameId);
-        ChessGame game = gameDAO.getGame(gameId).game();
-        if(game == null) {
+        GameData data = gameDAO.getGame(gameId);
+        if(data == null) {
             throw new BadRequestException("Game ID not found.");
         }
-        var loadGameMessage = new LoadGameMessage(game);
+        ChessGame.TeamColor color = getColor(username, data);
+        var loadGameMessage = new LoadGameMessage(data.game());
         connectionManager.sendMessageToUser(username, gameId, loadGameMessage);
         String message;
         if(color == null) {
@@ -79,7 +95,7 @@ public class WebSocketHandler {
         connectionManager.sendAndExclude(username, gameId, notification);
     }
 
-    private void makeMove(String authToken, Integer gameId, ChessGame.TeamColor color, ChessMove move)
+    private void makeMove(String authToken, Integer gameId, ChessMove move)
             throws DataAccessException, IOException, InvalidMoveException, UnauthorizedException, BadRequestException {
         String username = getUsernameAndCheckAuth(authToken);
         GameData data = gameDAO.getGame(gameId);
@@ -88,6 +104,10 @@ public class WebSocketHandler {
         }
         if(Service.isNotAuthorized(authToken, USE_MEMORY_DAO)) {
             throw new UnauthorizedException("Invalid authentication. Please log in again.");
+        }
+        ChessGame.TeamColor color = getColor(username, data);
+        if(color == null) {
+            throw new UnauthorizedException("Observers can't make moves.");
         }
         if(color != data.game().getTeamTurn()) {
             throw new UnauthorizedException("It's not your turn.");
@@ -125,15 +145,20 @@ public class WebSocketHandler {
             data.game().setComplete(true);
             gameDAO.updateGame(gameId, data);
         }
-        notification = new NotificationMessage(message);
-        connectionManager.sendAndExclude(null, gameId, notification);
+        if(data.game().isInCheck(color.getOpponent()) ||
+                data.game().isInStalemate(color.getOpponent()) ||
+                data.game().isInCheckmate(color.getOpponent())) {
+            notification = new NotificationMessage(message);
+            connectionManager.sendAndExclude(null, gameId, notification);
+        }
     }
 
-    private void leave(String authToken, Integer gameId, ChessGame.TeamColor color)
+    private void leave(String authToken, Integer gameId)
             throws IOException, DataAccessException, UnauthorizedException {
         String username = getUsernameAndCheckAuth(authToken);
+        GameData game = gameDAO.getGame(gameId);
+        ChessGame.TeamColor color = getColor(username, game);
         if(color != null) {
-            GameData game = gameDAO.getGame(gameId);
             switch(color) {
                 case WHITE ->
                     game = new GameData(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
@@ -148,10 +173,14 @@ public class WebSocketHandler {
         connectionManager.remove(username, gameId);
     }
 
-    private void resign(String authToken, Integer gameId, ChessGame.TeamColor color)
-            throws IOException, DataAccessException, UnauthorizedException {
+    private void resign(String authToken, Integer gameId)
+            throws IOException, DataAccessException, UnauthorizedException, BadRequestException {
         String username = getUsernameAndCheckAuth(authToken);
         GameData game = gameDAO.getGame(gameId);
+        if(game.game().isComplete()) {
+            throw new BadRequestException("The game is already over.");
+        }
+        ChessGame.TeamColor color = getColor(username, game);
         switch(color) {
             case WHITE, BLACK -> game.game().setComplete(true);
             case null -> throw new UnauthorizedException("Observers cannot resign. Use `leave` instead.");
@@ -168,5 +197,15 @@ public class WebSocketHandler {
             throw new UnauthorizedException("Invalid authentication. Please log in again.");
         }
         return authData.username();
+    }
+
+    private ChessGame.TeamColor getColor(String username, GameData game) {
+        if(username.equalsIgnoreCase(game.blackUsername())) {
+            return ChessGame.TeamColor.BLACK;
+        } else if(username.equalsIgnoreCase(game.whiteUsername())) {
+            return ChessGame.TeamColor.WHITE;
+        } else {
+            return null;
+        }
     }
 }
