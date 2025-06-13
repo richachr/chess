@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.GsonBuilder;
+import facade.ResponseException;
 import result.ErrorResult;
 import server.handler.*;
 import service.AlreadyTakenException;
@@ -11,7 +12,15 @@ import spark.*;
 
 public class Server {
     public static final boolean  USE_MEMORY_DAO = false;
-    private final WebSocketHandler wsHandler = new WebSocketHandler(USE_MEMORY_DAO);
+    private WebSocketHandler wsHandler;
+
+    public Server() {
+        try {
+            wsHandler  = new WebSocketHandler(USE_MEMORY_DAO);
+        } catch (ResponseException e) {
+            handleException(e);
+        }
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
