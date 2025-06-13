@@ -74,6 +74,12 @@ public class InGameClient implements Client {
 
     private void resign(WebSocketFacade facade) {
         try {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Are you sure? (y/n): ");
+            String response = scanner.nextLine();
+            if(!response.equalsIgnoreCase("y")) {
+                return;
+            }
             facade.resign(data);
         }  catch (ResponseException e) {
             printError(e.getMessage().replaceAll("Error: ", ""));
@@ -104,6 +110,10 @@ public class InGameClient implements Client {
             inputScanner.next();
             try {
                 ChessPosition position = CoordinateHandler.getPosition(inputScanner.next());
+                if(game.getBoard().getPiece(position) == null) {
+                    printError("That space is blank.");
+                    return;
+                }
                 Collection<ChessMove> validMoves = game.validMoves(position);
                 ArrayList<ChessPosition> positionToHighlight = new ArrayList<>();
                 positionToHighlight.add(position);
