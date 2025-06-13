@@ -76,7 +76,7 @@ public class GameService extends Service {
         } else {
             GameData newGameData = getNewGameData(req, gameData, authData);
             try {
-                games.updateGame(gameData,newGameData);
+                games.updateGame(gameData.gameID(), newGameData);
             } catch (DataAccessException e) {
                 throw new NotFoundException(e.getLocalizedMessage());
             }
