@@ -19,7 +19,7 @@ public class ClearHandler extends Handler implements Route {
         var gsonBuilder = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
         try {
             TestService.clear(useMemoryDao);
-            ConnectionManager.connections.clear();
+            ConnectionManager.CONNECTIONS.clear();
             res.status(200);
         } catch (Exception e) {
             Server.handleException(e);
