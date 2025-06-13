@@ -12,7 +12,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import server.Server;
 import server.websocket.ConnectionManager;
 import service.BadRequestException;
 import service.Service;
@@ -44,7 +43,7 @@ public class WebSocketHandler {
                 gameDAO = new SQLGameDAO();
                 authDAO = new SQLAuthDAO();
             } catch (DataAccessException e) {
-                Server.handleException(e);
+                throw new RuntimeException(e);
             }
         }
     }
@@ -74,7 +73,7 @@ public class WebSocketHandler {
         try {
             session.getRemote().sendString(messageString);
         } catch (IOException ex) {
-            Server.handleException(ex);
+            throw new RuntimeException(ex);
         }
     }
 
