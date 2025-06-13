@@ -102,13 +102,13 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
-    public void updateGame(GameData original, GameData replacement) throws DataAccessException {
+    public void updateGame(Integer originalGameId, GameData replacement) throws DataAccessException {
         String sql = """
                      SELECT * FROM game
                      WHERE id = ?;
                      """;
         try(var conn = DatabaseManager.getConnection(); var statement = conn.prepareStatement(sql)) {
-            statement.setInt(1, original.gameID());
+            statement.setInt(1, originalGameId);
             var rs = statement.executeQuery();
             if(rs.next()) {
                 sql = """
@@ -125,7 +125,7 @@ public class SQLGameDAO implements GameDAO {
                     }
                     var gameDataText = new Gson().toJson(replacement.game());
                     updateStatement.setString(4, gameDataText);
-                    updateStatement.setInt(5, original.gameID());
+                    updateStatement.setInt(5, originalGameId);
                     updateStatement.executeUpdate();
                 }
             } else {

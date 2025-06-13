@@ -27,12 +27,14 @@ public class MemoryGameDAO implements GameDAO {
         return mainArray;
     }
 
-    public void updateGame(GameData original, GameData replacement) throws DataAccessException {
-        if(mainArray.contains(original)) {
-            mainArray.set(mainArray.indexOf(original), replacement);
-        } else {
-            throw new DataAccessException("Game to update not found.");
+    public void updateGame(Integer originalGameId, GameData replacement) throws DataAccessException {
+        for(var game : mainArray) {
+            if(game.gameID().equals(originalGameId)) {
+                mainArray.set(mainArray.indexOf(game), replacement);
+                return;
+            }
         }
+        throw new DataAccessException("Game to update not found.");
     }
 
     public void clear() {

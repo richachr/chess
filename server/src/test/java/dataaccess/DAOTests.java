@@ -424,15 +424,15 @@ public class DAOTests {
                                        initialData.game());
             new SQLUserDAO().createUser(new UserData("white", "password", "email"));
             new SQLUserDAO().createUser(new UserData("black", "password", "email"));
-            new SQLGameDAO().updateGame(initialData,
+            new SQLGameDAO().updateGame(initialData.gameID(),
                                         new GameData(initialData.gameID(), "white", null, initialData.gameName(), initialData.game()));
-            new SQLGameDAO().updateGame(initialData,
+            new SQLGameDAO().updateGame(initialData.gameID(),
                                         new GameData(initialData.gameID(), "white", "black", initialData.gameName(), initialData.game()));
-            new SQLGameDAO().updateGame(initialData,
+            new SQLGameDAO().updateGame(initialData.gameID(),
                                         new GameData(initialData.gameID(), "white", "black", "new name", initialData.game()));
             initialData.game().setTeamTurn(ChessGame.TeamColor.BLACK);
             var expectedGame = new GameData(initialData.gameID(), "white", "black", "new name", initialData.game());
-            new SQLGameDAO().updateGame(initialData, expectedGame);
+            new SQLGameDAO().updateGame(initialData.gameID(), expectedGame);
             Assertions.assertEquals(expectedGame, new SQLGameDAO().getGame(initialData.gameID()));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -447,7 +447,7 @@ public class DAOTests {
             new SQLUserDAO().createUser(new UserData("black", "password", "email"));
             var newData = new GameData(100, "white", "black", "nonexistent", new ChessGame());
             Assertions.assertThrows(DataAccessException.class, () ->
-                    new SQLGameDAO().updateGame(initialData, newData));
+                    new SQLGameDAO().updateGame(initialData.gameID(), newData));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -462,9 +462,9 @@ public class DAOTests {
             new SQLUserDAO().createUser(new UserData("black", "password", "email"));
             var newData = new GameData(id, "white", "black", "null test", null);
             Assertions.assertThrows(DataAccessException.class, () ->
-                    new SQLGameDAO().updateGame(initialData, null));
+                    new SQLGameDAO().updateGame(initialData.gameID(), null));
             Assertions.assertThrows(DataAccessException.class, () ->
-                    new SQLGameDAO().updateGame(initialData, newData));
+                    new SQLGameDAO().updateGame(initialData.gameID(), newData));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -477,7 +477,7 @@ public class DAOTests {
             int id = new SQLGameDAO().createGame(initialData);
             var newData = new GameData(id, "white", "black", "existent", null);
             Assertions.assertThrows(DataAccessException.class, () ->
-                    new SQLGameDAO().updateGame(initialData, newData));
+                    new SQLGameDAO().updateGame(initialData.gameID(), newData));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
