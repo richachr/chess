@@ -25,7 +25,7 @@ import java.io.IOException;
 
 @WebSocket
 public class WebSocketHandler {
-    private static boolean USE_MEMORY_DAO;
+    private final boolean useMemoryDao;
     private final ConnectionManager connectionManager = new ConnectionManager();
     private GameDAO gameDAO;
     private AuthDAO authDAO;
@@ -35,8 +35,8 @@ public class WebSocketHandler {
     }
 
     public WebSocketHandler(boolean useMemoryDao) throws ResponseException {
-        USE_MEMORY_DAO = useMemoryDao;
-        if(USE_MEMORY_DAO) {
+        this.useMemoryDao = useMemoryDao;
+        if(useMemoryDao) {
             gameDAO = new MemoryGameDAO();
             authDAO = new MemoryAuthDAO();
         } else {
@@ -106,7 +106,7 @@ public class WebSocketHandler {
         if(data == null) {
             throw new BadRequestException("Game ID not found.");
         }
-        if(Service.isNotAuthorized(authToken, USE_MEMORY_DAO)) {
+        if(Service.isNotAuthorized(authToken, useMemoryDao)) {
             throw new UnauthorizedException("Invalid authentication. Please log in again.");
         }
         ChessGame.TeamColor color = getColor(username, data);
