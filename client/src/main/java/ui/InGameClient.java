@@ -121,6 +121,7 @@ public class InGameClient implements Client {
 
     public void loadGame(ChessGame game) {
         this.board = game.getBoard();
+        this.game = game;
         drawBoard(data.playerColor(), null);
     }
 
@@ -205,17 +206,21 @@ public class InGameClient implements Client {
     private void drawRow(int row, boolean reversed, Collection<Integer> highlightedColumns) {
         System.out.print(EscapeSequences.EMPTY + EscapeSequences.SET_BG_COLOR_BLACK);
         System.out.printf(" %d ", row);
-        boolean highlighted;
+        boolean highlighted = false;
         if(reversed) {
             boolean whiteBackground = (row % 2 == 1);
             for(int col = 8; col >= 1; col--) {
-                highlighted = highlightedColumns.contains(col);
+                if(highlightedColumns != null) {
+                    highlighted = highlightedColumns.contains(col);
+                }
                 whiteBackground = drawPiece(row, col, whiteBackground, highlighted);
             }
         } else {
             boolean whiteBackground = (row % 2 == 0);
             for(int col = 1; col <= 8; col++) {
-                highlighted = highlightedColumns.contains(col);
+                if(highlightedColumns != null) {
+                    highlighted = highlightedColumns.contains(col);
+                }
                 whiteBackground = drawPiece(row, col, whiteBackground, highlighted);
             }
         }
@@ -226,6 +231,9 @@ public class InGameClient implements Client {
 
     private Collection<Integer> getColumnsForRow(int row, Collection<ChessPosition> positions) {
         Collection<Integer> columns = new ArrayList<>();
+        if(positions == null) {
+            return null;
+        }
         for(var position : positions) {
             if(position.getRow() == row) {
                 columns.add(position.getColumn());
