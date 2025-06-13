@@ -40,6 +40,7 @@ public class WebSocketHandler {
             authDAO = new MemoryAuthDAO();
         } else {
             try {
+                new SQLUserDAO();
                 gameDAO = new SQLGameDAO();
                 authDAO = new SQLAuthDAO();
             } catch (DataAccessException e) {
