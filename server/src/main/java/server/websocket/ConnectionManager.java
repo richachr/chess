@@ -1,6 +1,5 @@
 package server.websocket;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ServerMessage;
